@@ -1,0 +1,5 @@
+requests
+pandas
+keras
+tensorflow
+-q git+https://github.com/tensorflow/docs
