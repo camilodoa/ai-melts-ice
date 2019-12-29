@@ -4,7 +4,7 @@ import pandas as pd
 import os.path
 from datasetgenerator import Generator
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional
 from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping
 from keras.models import load_model
@@ -18,61 +18,65 @@ class Predictor():
         if g.reinit:
             g.initialize()
 
-        df = pd.read_csv('data.csv')
+        df = pd.read_csv('data.csv', infer_datetime_format=True, parse_dates=['Date']).drop(['Date'], axis=1)
+
+        print(df.values)
+        data = df.values
+        r, c = data.shape
+        data = data.reshape(1, r, c)
 
         self.train = df.sample(frac = 0.8, random_state=0)
 
-        self.train_X = self.train[['Year', 'Month']]
-        self.train_Y = self.train.drop(['Year', 'Month'], axis=1)
+        self.train_X = self.train.drop(['Removals'], axis=1)
+        self.train_Y = self.train[['Removals']]
 
         self.test = df.drop(self.train.index)
-        self.test_X = self.test[['Year', 'Month']]
-        self.test_Y = self.test.drop(['Year', 'Month'], axis=1)
+        self.test_X = self.test.drop(['Removals'], axis=1)
+        self.test_Y = self.test[['Removals']]
 
         self.ready = False
 
     def build(self):
-        model = Sequential([
-            Dense(32, input_shape=[len(self.train_X.keys())], activation='relu'),
-            Dense(64,  activation='relu'),
-            Dense(128,  activation='relu'),
-            Dense(len(self.train_Y.keys()))
-        ])
 
-        optimizer = RMSprop(0.001)
+        model = Sequential()
+        model.add(LSTM(256, input_shape=[len(self.train_X.keys())], return_sequences=True))
+        model.add(Dropout(0.5))
+        model.add(Dense(64, activation='relu'))
+        model.add(Dense(16, activation='relu'))
+        model.add(Dense(len(self.train_y.keys()), activation='sigmoid'))
 
-        model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+        optimizer = RMSprop(lr=lr)
+
+        model.compile(loss='mean_squared_error', optimizer=optimizer)
 
         return model
 
     def fit(self):
+
         model = self.build()
         train = self.train.copy()
 
-        early_stop = EarlyStopping(monitor='val_loss', patience=10)
-
         history = model.fit(self.train_X, self.train_Y,
-                    epochs=1000, validation_split = 0.2, verbose=0,
-                    callbacks=[early_stop])
+                    epochs=1000, validation_split = 0.2)
 
         hist = pd.DataFrame(history.history)
         hist['epoch'] = history.epoch
         hist.tail()
 
-        # plt.plot(hist[['epoch']], hist[['loss']])
-        # plt.xlabel('epochs')
-        # plt.ylabel('loss')
-        # plt.show()
-        #
-        # plt.plot(hist[['epoch']], hist[['mae']])
-        # plt.xlabel('epochs')
-        # plt.ylabel('mae')
-        # plt.show()
-        #
-        # plt.plot(hist[['epoch']], hist[['mse']])
-        # plt.xlabel('epochs')
-        # plt.ylabel('mse')
-        # plt.show()
+        plt.plot(hist[['epoch']], hist[['loss']])
+        plt.xlabel('epochs')
+        plt.ylabel('loss')
+        plt.show()
+
+        plt.plot(hist[['epoch']], hist[['mae']])
+        plt.xlabel('epochs')
+        plt.ylabel('mae')
+        plt.show()
+
+        plt.plot(hist[['epoch']], hist[['mse']])
+        plt.xlabel('epochs')
+        plt.ylabel('mse')
+        plt.show()
 
         loss, mae, mse = model.evaluate(self.test_X, self.test_Y)
 
@@ -90,6 +94,7 @@ class Predictor():
         if not self.ready:
             if os.path.isfile('model.h5'):
                 self.model = load_model('model.h5')
+                self.ready = True
             else:
                 self.fit()
 
@@ -105,4 +110,4 @@ class Predictor():
 if __name__ == '__main__':
     p = Predictor()
     p.fit()
-    p.predict(2019, 11)
+    # p.predict(2019, 11)

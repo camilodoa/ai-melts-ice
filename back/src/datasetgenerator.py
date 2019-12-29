@@ -25,10 +25,6 @@ class Generator():
         s = Syracuse()
         df = pd.DataFrame()
 
-        '''
-        year    month   deportations at city1       ' ' city 2
-        '''
-
         'Create dictionary to make the transition to dataset easier'
         dict = {}
 
@@ -40,26 +36,20 @@ class Generator():
                 continue
 
             for point in json['timeline']:
-                year, month = self.translateDate(point['fymon'])
+                date = pd.to_datetime(point['fymon'])
                 city = json['title'].replace(', POE', '')
 
-                if dict.get(year) == None:
-                    dict[year] = {}
+                if dict.get(date) == None:
+                    dict[date] = {'Date' : date}
 
-                if dict[year].get(month) == None:
-                    dict[year][month] = {}
-
-                dict[year][month][city] = point['number']
+                dict[date][city] = int(point['number'])
 
         'Transfer dictionary layout to dataset'
-        for year in dict.keys():
-            for month in dict[year].keys():
-                data = dict[year][month]
-                data.update({'Year' : year, 'Month' : month})
-
-                df = df.append(data, ignore_index = True, sort = False)
+        for data in dict.values():
+            df = df.append(data, ignore_index = True, sort = False)
 
         df = df.fillna(0)
+        df.sort_values(by='Date')
         return df
 
     def initialize(self):
@@ -77,7 +67,11 @@ class Generator():
         return df
 
     def translateDate(self, str):
-        'Translates date in form YEAR-MONTH into number (0 is 2002-10)'
+        'Translates date to year, month'
         str = str.split('-')
 
         return int(str[0]), int(str[1])
+
+if __name__ == '__main__':
+    g = Generator()
+    print(g.initialize().values)
