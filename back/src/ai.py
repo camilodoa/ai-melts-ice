@@ -18,85 +18,52 @@ class Predictor():
         if g.reinit:
             g.initialize()
 
-        df = pd.read_csv('data.csv', infer_datetime_format=True, parse_dates=['Date']).drop(['Date'], axis=1)
+        df = pd.read_csv('data.csv', infer_datetime_format=True, parse_dates=['Date']).drop(['Date'], axis = 1)
 
-        print(df.values)
-        data = df.values
-        r, c = data.shape
-        data = data.reshape(1, r, c)
+        train, test = g.split(df)
 
-        self.train = df.sample(frac = 0.8, random_state=0)
-
-        self.train_X = self.train.drop(['Removals'], axis=1)
-        self.train_Y = self.train[['Removals']]
-
-        self.test = df.drop(self.train.index)
-        self.test_X = self.test.drop(['Removals'], axis=1)
-        self.test_Y = self.test[['Removals']]
+        self.look_back = 1
+        self.trainX, self.trainY = g.LSTM_convert(train, self.look_back)
+        self.testX, self.testY = g.LSTM_convert(test, self.look_back)
 
         self.ready = False
 
     def build(self):
 
         model = Sequential()
-        model.add(LSTM(256, input_shape=[len(self.train_X.keys())], return_sequences=True))
-        model.add(Dropout(0.5))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(16, activation='relu'))
-        model.add(Dense(len(self.train_y.keys()), activation='sigmoid'))
-
-        optimizer = RMSprop(lr=lr)
-
-        model.compile(loss='mean_squared_error', optimizer=optimizer)
+        model.add(Dense(8, input_dim=self.look_back, activation='relu'))
+        model.add(Dense(1))
+        model.compile(loss='mean_squared_error', optimizer='adam')
 
         return model
 
     def fit(self):
 
         model = self.build()
-        train = self.train.copy()
 
-        history = model.fit(self.train_X, self.train_Y,
-                    epochs=1000, validation_split = 0.2)
+        history = model.fit(self.trainX, self.trainY, epochs=200, batch_size=2, verbose=2)
 
-        hist = pd.DataFrame(history.history)
-        hist['epoch'] = history.epoch
-        hist.tail()
+        train_score = model.evaluate(self.trainX, self.trainY, verbose=0)
+        print('Train Score: %.2f MSE (%.2f RMSE)' % (train_score, math.sqrt(train_score)))
+        test_score = model.evaluate(self.testX, self.testY, verbose=0)
+        print('Test Score: %.2f MSE (%.2f RMSE)' % (test_score, math.sqrt(test_score)))
 
-        plt.plot(hist[['epoch']], hist[['loss']])
-        plt.xlabel('epochs')
-        plt.ylabel('loss')
-        plt.show()
-
-        plt.plot(hist[['epoch']], hist[['mae']])
-        plt.xlabel('epochs')
-        plt.ylabel('mae')
-        plt.show()
-
-        plt.plot(hist[['epoch']], hist[['mse']])
-        plt.xlabel('epochs')
-        plt.ylabel('mse')
-        plt.show()
-
-        loss, mae, mse = model.evaluate(self.test_X, self.test_Y)
-
-        print("Testing set Mean Abs Error: {:5.2f} MPG".format(mae))
-
-        self.ready = True
         self.model = model
-
         model.save('model.h5')
 
-        return model, hist
+        self.ready = True
+
+        return model, history
 
     def predict(self, year, month):
 
         if not self.ready:
             if os.path.isfile('model.h5'):
-                self.model = load_model('model.h5')
+                self.model = model = load_model('model.h5')
                 self.ready = True
             else:
-                self.fit()
+                model, history = self.fit()
+
 
         predictions = self.model.predict(np.array([[year , month]]))
 
@@ -110,4 +77,4 @@ class Predictor():
 if __name__ == '__main__':
     p = Predictor()
     p.fit()
-    # p.predict(2019, 11)
+    p.predict(2019, 11)

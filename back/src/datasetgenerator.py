@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from query import Syracuse
 
 class Generator():
@@ -66,11 +67,23 @@ class Generator():
         df.to_csv('data.csv')
         return df
 
-    def translateDate(self, str):
-        'Translates date to year, month'
-        str = str.split('-')
+    def split(self, df):
+        data = df.values
+        train_size = int(len(data) * 0.67)
+        test_size = len(data) - train_size
+        train, test = data[0:train_size, :], data[train_size:len(df), :]
 
-        return int(str[0]), int(str[1])
+        return train, test
+
+    def LSTM_convert(self, df, look_back=1):
+    	dataX, dataY = [], []
+    	for i in range(len(df) - look_back - 1):
+    		a = df[i : (i+look_back), 0]
+
+    		dataX.append(a)
+    		dataY.append(df[i + look_back, 0])
+
+    	return np.array(dataX), np.array(dataY)
 
 if __name__ == '__main__':
     g = Generator()
