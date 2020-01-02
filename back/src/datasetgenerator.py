@@ -16,10 +16,10 @@ class Generator():
     '''
     Dataset initialization functions
     '''
-    def fetch(self, city):
-        'Queries Syracuse DB for data on a particular city, based on #'
+    def fetch(self, county):
+        'Queries Syracuse DB for data on a particular county, based on #'
         s = Syracuse()
-        return s.query(str(city))
+        return s.query(str(county))
 
     def fill(self):
         'Fills out empty Pandas DF with Syracuse data'
@@ -29,8 +29,8 @@ class Generator():
         'Create dictionary to make the transition to dataset easier'
         dict = {}
 
-        for city in range(s.cities):
-            json = self.fetch(city)
+        for county in range(s.counties):
+            json = self.fetch(county)
             print(json['title'])
 
             if json['title'] == '':
@@ -38,19 +38,20 @@ class Generator():
 
             for point in json['timeline']:
                 date = pd.to_datetime(point['fymon'])
-                city = json['title'].replace(', POE', '')
+                county = json['title']
 
                 if dict.get(date) == None:
                     dict[date] = {'Date' : date}
 
-                dict[date][city] = int(point['number'])
+                dict[date][county] = int(point['number'])
 
         'Transfer dictionary layout to dataset'
         for data in dict.values():
             df = df.append(data, ignore_index = True, sort = False)
 
         df = df.fillna(0)
-        df.sort_values(by='Date')
+        df['Date'] = pd.to_datetime(df['Date'])
+        df = df.sort_values(by = ['Date'])
         return df
 
     def initialize(self):
@@ -64,26 +65,37 @@ class Generator():
         if ok.lower() == 'n':
             return None
 
-        df.to_csv('data.csv')
+        df.to_csv('data.csv', index = False)
         return df
 
-    def split(self, df):
-        data = df.values
-        train_size = int(len(data) * 0.67)
-        test_size = len(data) - train_size
-        train, test = data[0:train_size, :], data[train_size:len(df), :]
+    def split(self, df, n_steps):
 
-        return train, test
+        sequences = df.values
 
-    def LSTM_convert(self, df, look_back=1):
-    	dataX, dataY = [], []
-    	for i in range(len(df) - look_back - 1):
-    		a = df[i : (i+look_back), 0]
+        X, Y = [], []
 
-    		dataX.append(a)
-    		dataY.append(df[i + look_back, 0])
+        for i in range(len(sequences)):
+            # End of pattern
+            end_ix = i + n_steps
+            # Check for out of bounds exceptions
+            if end_ix > len(sequences)-1: break
 
-    	return np.array(dataX), np.array(dataY)
+            # Input and output parts of the pattern
+            seq_x, seq_y = sequences[i:end_ix, :], sequences[end_ix, :]
+            X.append(seq_x)
+            Y.append(seq_y)
+
+        return np.array(X), np.array(Y)
+
+    def convert(self, df, n_steps, lo, hi):
+        sequences = df.values
+
+        X = []
+
+        if hi == 0: X.append(sequences[lo:, :])
+        else: X.append(sequences[lo:hi, :])
+
+        return np.array(X)
 
 if __name__ == '__main__':
     g = Generator()

@@ -2,10 +2,10 @@ import math
 import numpy as np
 import pandas as pd
 import os.path
+from dateutil.relativedelta import *
 from datasetgenerator import Generator
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional
-from keras.optimizers import RMSprop
+from keras.layers import Dense, LSTM
 from keras.callbacks import EarlyStopping
 from keras.models import load_model
 
@@ -18,22 +18,27 @@ class Predictor():
         if g.reinit:
             g.initialize()
 
-        df = pd.read_csv('data.csv', infer_datetime_format=True, parse_dates=['Date']).drop(['Date'], axis = 1)
+        df = pd.read_csv('data.csv', infer_datetime_format = True,
+            parse_dates = ['Date'])
 
-        train, test = g.split(df)
+        df = df.sort_values('Date').drop(['Date'], axis = 1)
 
-        self.look_back = 1
-        self.trainX, self.trainY = g.LSTM_convert(train, self.look_back)
-        self.testX, self.testY = g.LSTM_convert(test, self.look_back)
+        self.n_steps = 12
+        self.X, self.Y = g.split(df, self.n_steps)
+
+        self.n_features = self.X.shape[2]
 
         self.ready = False
 
     def build(self):
 
         model = Sequential()
-        model.add(Dense(8, input_dim=self.look_back, activation='relu'))
-        model.add(Dense(1))
-        model.compile(loss='mean_squared_error', optimizer='adam')
+        model.add(LSTM(100, activation = 'relu', return_sequences = True,
+            input_shape = (self.n_steps, self.n_features)))
+        model.add(LSTM(200, activation = 'relu'))
+        model.add(Dense(self.n_features))
+
+        model.compile(optimizer = 'adam', loss = 'mse')
 
         return model
 
@@ -41,35 +46,52 @@ class Predictor():
 
         model = self.build()
 
-        history = model.fit(self.trainX, self.trainY, epochs=200, batch_size=2, verbose=2)
+        early_stop = EarlyStopping(monitor='val_loss', patience=10)
 
-        train_score = model.evaluate(self.trainX, self.trainY, verbose=0)
-        print('Train Score: %.2f MSE (%.2f RMSE)' % (train_score, math.sqrt(train_score)))
-        test_score = model.evaluate(self.testX, self.testY, verbose=0)
-        print('Test Score: %.2f MSE (%.2f RMSE)' % (test_score, math.sqrt(test_score)))
+        history = model.fit(self.X, self.Y, epochs = 1000, callbacks=[early_stop])
 
         self.model = model
         model.save('model.h5')
 
         self.ready = True
 
-        return model, history
+        return model
 
-    def predict(self, year, month):
+    def predict(self):
 
-        if not self.ready:
-            if os.path.isfile('model.h5'):
-                self.model = model = load_model('model.h5')
-                self.ready = True
-            else:
-                model, history = self.fit()
+        if os.path.isfile('model.h5'):
+            self.model = model = load_model('model.h5')
+            self.ready = True
+        else:
+            model = self.fit()
 
+        g = Generator()
 
-        predictions = self.model.predict(np.array([[year , month]]))
+        df = pd.read_csv('data.csv', infer_datetime_format=True,
+            parse_dates=['Date'])
 
-        predictions = {city : prediction for city, prediction in zip(self.train.columns, predictions[0])}
+        predictions_df = df.drop(['Date'], axis = 1)
 
-        print(predictions)
+        # Extract last recorded date
+        date = pd.to_datetime(df['Date'].values[-1])
+
+        for i in range(21):
+            data = g.convert(predictions_df, self.n_steps, -self.n_steps, 0)
+
+            predictions = model.predict(data)
+
+            date = date + relativedelta(months = 1)
+
+            # Only keep integer predictions; negative predictions should be set to 0
+            predictions = {city : int( round( max(prediction, 0) ) ) for city, prediction in zip(predictions_df.columns, predictions[0])}
+
+            predictions_df = predictions_df.append(predictions, ignore_index = True)
+
+            predictions.update({'Date' : date})
+
+            df = df.append(predictions, ignore_index = True)
+
+        df.to_csv('predictions.csv', index = False)
 
         return predictions
 
@@ -77,4 +99,4 @@ class Predictor():
 if __name__ == '__main__':
     p = Predictor()
     p.fit()
-    p.predict(2019, 11)
+    p.predict()

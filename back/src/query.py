@@ -22,15 +22,14 @@ class Syracuse(Querier):
     Website: https://trac.syr.edu/phptools/immigration/remove/
     '''
     def __init__(self):
-        self.dates = 191
         self.cities = 385
+        self.counties = 1972
 
-    def query(self, city):
+    def query(self, county):
         url = (
-            'https://trac.syr.edu/phptools/immigration/remove/graph.php?'
-            'stat=count&timescale=fymon&depart_city='
-            '[CITY]&timeunit=number'
-        ).replace('[CITY]', city)
+            'https://trac.syr.edu/phptools/immigration/arrest/graph.php?stat='
+            'count&timescale=fymon&county=[COUNTY]&timeunit=number'
+        ).replace('[COUNTY]', county)
 
         headers = {
             'content-type': 'application/json'
