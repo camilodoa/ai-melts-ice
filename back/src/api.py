@@ -1,30 +1,68 @@
-import flask
-from flask import Flask
-from ai import Predictor
-from keras.models import load_model
-
-from keras import backend as K
-K.clear_session()
-
-# Our AI model
-p = Predictor()
+from flask import Flask, jsonify
+from datetime import datetime
+import pandas as pd
 
 # REST API
 api = Flask(__name__)
 
-@api.route('/predict/<int:year>/<int:month>', methods=['GET'])
-def predict(year, month):
+class InvalidUsage(Exception):
+    status_code = 400
 
-    print('in predict')
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
 
-    data = p.predict(year, month)
+        if status_code is not None:
+            self.status_code = status_code
 
-    for key, value in data.items():
-        if value < 0: data[key] = 0
+        self.payload = payload
 
-    print(data)
+    def to_dict(self):
+        rv = dict(self.payload or ())
 
-    return flask.jsonify(data)
+        rv['message'] = self.message
+
+        return rv
+
+@api.errorhandler(InvalidUsage)
+def invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+
+    return response
+
+
+@api.route('/start', methods=['GET'])
+def start():
+    'Returns list of predicted dates'
+
+    predictions = pd.read_csv('predictions.csv')
+
+    return jsonify(predictions['Date'].values.tolist())
+
+
+@api.route('/predict/<int:month>/<int:year>', methods=['GET'])
+def predict(month, year):
+    'Returns prediction for month year'
+
+    target = datetime(year, month, 1)
+    target_str = target.strftime("%-m/%-d/%Y")
+
+    predictions = pd.read_csv('predictions.csv', infer_datetime_format = True,
+        parse_dates = ['Date'])
+
+    dates = predictions['Date']
+
+    start, end = dates.iloc[0], dates.iloc[-1]
+
+    if target < start or target > end:
+        raise InvalidUsage('This date is outside our dataset', status_code = 410)
+
+    data = predictions[predictions['Date'] == target_str].to_dict(orient = 'records')[0]
+
+    return jsonify(data)
+
 
 if __name__ == '__main__':
-    api.run(host='0.0.0.0',port=8080, debug=False)
+
+    api.run(host='0.0.0.0',port=8080)

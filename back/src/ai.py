@@ -1,19 +1,20 @@
-import math
-import numpy as np
+from keras.callbacks import EarlyStopping
+from datasetgenerator import Generator
+from dateutil.relativedelta import *
+from keras.layers import Dense, LSTM
+from keras.models import Sequential
+from keras.models import load_model
 import pandas as pd
 import os.path
-from dateutil.relativedelta import *
-from datasetgenerator import Generator
-from keras.models import Sequential
-from keras.layers import Dense, LSTM
-from keras.callbacks import EarlyStopping
-from keras.models import load_model
-
-import matplotlib.pyplot as plt
 
 class Predictor():
+    '''
+    Predictor class. Used to build() and fit() a Keras LSTM model to
+    make predictions of the future with predict(month, year).
+    '''
 
     def __init__(self):
+
         g = Generator()
         if g.reinit:
             g.initialize()
@@ -30,6 +31,7 @@ class Predictor():
 
         self.ready = False
 
+
     def build(self):
 
         model = Sequential()
@@ -41,6 +43,7 @@ class Predictor():
         model.compile(optimizer = 'adam', loss = 'mse')
 
         return model
+
 
     def fit(self):
 
@@ -57,7 +60,12 @@ class Predictor():
 
         return model
 
-    def predict(self):
+
+    def predict(self, month, year):
+        '''
+        Make predictions until month year (greater than 2014) and write that to
+        predictions.csv
+        '''
 
         if os.path.isfile('model.h5'):
             self.model = model = load_model('model.h5')
@@ -75,7 +83,11 @@ class Predictor():
         # Extract last recorded date
         date = pd.to_datetime(df['Date'].values[-1])
 
-        for i in range(21):
+        if year < date.year: return None
+
+        diff = (year - date.year) * 12 + month - date.month
+
+        for i in range(diff):
             data = g.convert(predictions_df, self.n_steps, -self.n_steps, 0)
 
             predictions = model.predict(data)
@@ -94,9 +106,9 @@ class Predictor():
         df.to_csv('predictions.csv', index = False)
 
         return predictions
-
+        
 
 if __name__ == '__main__':
+    'Usage'
     p = Predictor()
-    p.fit()
-    p.predict()
+    p.predict(12, 2021)

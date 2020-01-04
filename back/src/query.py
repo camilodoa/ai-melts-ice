@@ -11,19 +11,22 @@ class Querier():
     def __init__(self):
         pass
 
+
     def query(self):
         pass
+
 
 
 class Syracuse(Querier):
     '''
     Object used to query Syracuse deportation database
 
-    Website: https://trac.syr.edu/phptools/immigration/remove/
+    Website: https://trac.syr.edu/phptools/immigration/arrest/
     '''
     def __init__(self):
         self.cities = 385
         self.counties = 1972
+
 
     def query(self, county):
         url = (
@@ -40,6 +43,7 @@ class Syracuse(Querier):
         return response
 
 
+
 class Twitter(Querier):
     '''
     Object used to query Twitter for ice-related tweets
@@ -47,16 +51,10 @@ class Twitter(Querier):
     def __init__(self):
         pass
 
+
     def query(self):
         pass
-        # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-        # auth.set_access_token(access_token, access_token_secret)
-        #
-        # api = tweepy.API(auth)
-        #
-        # public_tweets = api.home_timeline()
-        # for tweet in public_tweets:
-        #     print(tweet.text)
+
 
     def crawl(self):
         pass
