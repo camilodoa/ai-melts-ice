@@ -2,4 +2,3 @@ requests
 pandas
 keras==2.2.5
 tensorflow
--q git+https://github.com/tensorflow/docs
