@@ -1,0 +1,14 @@
+.logo {
+  height: 10vmin;
+  pointer-events: none;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 3vmin);
+  color: #808080;
+  min-height:60vh;
+}
