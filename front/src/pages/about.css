@@ -1,0 +1,24 @@
+.about {
+  text-align: center;
+  background-color: #f2f3f4;
+  min-height: 100vh;
+}
+
+.about-logo {
+  height: 35vmin;
+  pointer-events: none;
+}
+
+.about-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 3vmin);
+  color: #808080;
+  min-height:60vh;
+}
+
+.about a:link{
+  color: #c3c4c5;
+}

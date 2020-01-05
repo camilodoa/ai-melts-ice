@@ -1,0 +1,13 @@
+.footer {
+  font-size: calc(10px + 1.5vmin);
+  background-color: #f2f3f4;
+  color: #d9dadb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer a:link {
+  color: #c3c4c5;
+}
