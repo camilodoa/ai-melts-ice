@@ -5,6 +5,7 @@ import pandas as pd
 # REST API
 api = Flask(__name__)
 
+
 class InvalidUsage(Exception):
     status_code = 400
 
@@ -28,7 +29,6 @@ class InvalidUsage(Exception):
 def invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
-
     return response
 
 
@@ -38,7 +38,9 @@ def start():
 
     predictions = pd.read_csv('predictions.csv')
 
-    return jsonify(predictions['Date'].values.tolist())
+    response = jsonify(predictions['Date'].values.tolist())
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @api.route('/predict/<int:month>/<int:year>', methods=['GET'])
@@ -60,7 +62,9 @@ def predict(month, year):
 
     data = predictions[predictions['Date'] == target_str].to_dict(orient = 'records')[0]
 
-    return jsonify(data)
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
