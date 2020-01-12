@@ -1,6 +1,10 @@
+from geopy.geocoders import Nominatim
+from query import Syracuse
 import pandas as pd
 import numpy as np
-from query import Syracuse
+import pickle
+import time
+
 
 class Generator():
     '''
@@ -70,6 +74,8 @@ class Generator():
 
         df.to_csv('data.csv', index = False)
 
+        self.prepMapping()
+
         return df
 
 
@@ -96,7 +102,7 @@ class Generator():
 
     def convert(self, df, n_steps, lo, hi):
         'Converts dataset into X input for network'
-        
+
         sequences = df.values
 
         X = []
@@ -105,6 +111,36 @@ class Generator():
         else: X.append(sequences[lo:hi, :])
 
         return np.array(X)
+
+
+    def translate(self, df):
+        'Translates county names to coordinate points'
+
+        geolocator = Nominatim(user_agent="ai-melts-ice", timeout=None)
+        mapping = {}
+
+        for i, county in enumerate(df.columns[216:]):
+            try:
+                location = geolocator.geocode(county)
+                mapping.update({county : [location.latitude, location.longitude]})
+                print(i, {county : [location.latitude, location.longitude]})
+                time.sleep(1)
+                pickle.dump( mapping, open( "county_to_coord.p", "wb" ) )
+
+            except GeocoderTimedOut as e:
+                print("Error: geocode failed on input %s with message %s"%(my_address, e.message))
+
+        return mapping
+
+
+    def prepMapping(self):
+        'Used to save the pickled dict for translating county to coord'
+
+        df = pd.read_csv('data.csv', encoding = 'utf8').drop(['Date'], axis = 1)
+
+        mapping = self.translate(df)
+
+        return mapping
 
 
 if __name__ == '__main__':

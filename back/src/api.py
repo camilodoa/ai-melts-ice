@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 from datetime import datetime
 import pandas as pd
+import pickle
+
 
 # REST API
 api = Flask(__name__)
@@ -36,10 +38,11 @@ def invalid_usage(error):
 def start():
     'Returns list of predicted dates'
 
-    predictions = pd.read_csv('predictions.csv')
+    predictions = pd.read_csv('predictions.csv', encoding = 'utf8')
 
     response = jsonify(predictions['Date'].values.tolist())
     response.headers.add('Access-Control-Allow-Origin', '*')
+
     return response
 
 
@@ -51,7 +54,7 @@ def predict(month, year):
     target_str = target.strftime("%-m/%-d/%Y")
 
     predictions = pd.read_csv('predictions.csv', infer_datetime_format = True,
-        parse_dates = ['Date'])
+        parse_dates = ['Date'], encoding = 'utf8')
 
     dates = predictions['Date']
 
@@ -62,11 +65,41 @@ def predict(month, year):
 
     data = predictions[predictions['Date'] == target_str].to_dict(orient = 'records')[0]
 
+    data = toGJSON(data)
+
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
+
     return response
 
 
-if __name__ == '__main__':
+def toGJSON(data):
+    'Turns {city : arrests} dictionary into geoJSON for mapbox'
 
+    geoJSON = {
+        'type' : 'FeatureCollection',
+        'features' : []
+    }
+
+    mapping = pickle.load( open( 'county_to_coord.p', 'rb' ) )
+
+    for county, arrests in data.items():
+        element = {
+            'type' : 'Feature',
+            'properties' : {
+                'county' : county,
+                'arrests' : arrests
+            },
+            'geometry' : {
+                'type' : 'Point',
+                'coordinates' : mapping.get(county)
+            }
+        }
+
+        geoJSON['features'].append(element)
+
+    return geoJSON
+
+
+if __name__ == '__main__':
     api.run(host='0.0.0.0',port=8080)
