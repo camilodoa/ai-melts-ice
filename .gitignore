@@ -1,5 +1,6 @@
 # Project-specific
-back/src/ai/keys.py
+ai-melts-ice/
+.DS_Store
 
 # Python
 

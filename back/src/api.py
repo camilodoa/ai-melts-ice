@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from datetime import datetime
 import pandas as pd
 import pickle
+import json
 
 
 # REST API
@@ -63,7 +64,7 @@ def predict(month, year):
     if target < start or target > end:
         raise InvalidUsage('This date is outside our dataset', status_code = 410)
 
-    data = predictions[predictions['Date'] == target_str].to_dict(orient = 'records')[0]
+    data = predictions[predictions['Date'] == target_str].drop(['Date'], axis=1).to_dict(orient = 'records')[0]
 
     data = toGJSON(data)
 

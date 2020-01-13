@@ -2,3 +2,5 @@ requests
 pandas
 keras==2.2.5
 tensorflow
+Flask
+geopy

@@ -1,3 +1,8 @@
+/*  globals  */
+@import "../node_modules/react-datepicker/dist/react-datepicker.css";
+@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+
+/*  index.js  */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -6,8 +11,131 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/*  App.js  */
+.App {
+  text-align: center;
+  background-color: #f2f3f4;
+  min-height: 100vh;
+}
+.App a:link{
+  color: #707070;
+  text-decoration: none;
+}
+.App a:hover{
+  color: #707070;
+  text-decoration: none;
+}
+.App a:active{
+  color: #707070;
+  text-decoration: none;
+}
+.App a:visited{
+  color: #707070;
+  text-decoration: none;
+}
+
+/*  home.js  */
+.logo {
+  height: 10vmin;
+  pointer-events: none;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 3vmin);
+  color: #808080;
+  min-height:60vh;
+}
+.mapContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+.sidebarStyle {
+  display: inline-block;
+  position: absolute;
+  top: 10;
+  left: 0;
+  margin: 12px;
+  background-color: #404040;
+  color: #ffffff;
+  z-index: 1 !important;
+  padding: 6px;
+  font-weight: bold;
+}
+
+/*  about.js  */
+.about {
+  text-align: center;
+  background-color: #f2f3f4;
+  min-height: 100vh;
+}
+.about-logo {
+  height: 35vmin;
+  pointer-events: none;
+}
+.about-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 3vmin);
+  color: #808080;
+  min-height:50vh;
+}
+.about-main{
+  display: inline-block;
+  margin: 1rem;
+  text-align: left;
+  justify-content: center;
+  width: 50%;
+  color: #787878;
+  font-size: calc(10px + 1.5vmin);
+}
+
+/*  header.js  */
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container input {
+    border-radius: 0;
+    align-items: center;
+    margin-right: 1vmin;
+}
+.non-resizing{
+  min-width: 80px;
+}
+
+/*  footer.js  */
+.footer {
+  font-size: calc(10px + 1.5vmin);
+  background-color: #ffffff;
+  color: #d9dadb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.footer a:link{
+  color: #c3c4c5;
+  text-decoration: none;
+}
+.footer a:hover{
+  color: #c3c4c5;
+  text-decoration: none;
+}
+.footer a:active{
+  color: #c3c4c5;
+  text-decoration: none;
+}
+.footer a:visited{
+  color: #c3c4c5;
+  text-decoration: none;
 }

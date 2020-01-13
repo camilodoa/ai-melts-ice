@@ -119,16 +119,11 @@ class Generator():
         geolocator = Nominatim(user_agent="ai-melts-ice", timeout=None)
         mapping = {}
 
-        for i, county in enumerate(df.columns[216:]):
-            try:
-                location = geolocator.geocode(county)
-                mapping.update({county : [location.latitude, location.longitude]})
-                print(i, {county : [location.latitude, location.longitude]})
-                time.sleep(1)
-                pickle.dump( mapping, open( "county_to_coord.p", "wb" ) )
-
-            except GeocoderTimedOut as e:
-                print("Error: geocode failed on input %s with message %s"%(my_address, e.message))
+        for i, county in enumerate(df.columns):
+            location = geolocator.geocode(county)
+            mapping.update({county : [location.latitude, location.longitude]})
+            print(i, {county : [location.longitude, location.latitude]})
+            time.sleep(1)
 
         return mapping
 
@@ -140,8 +135,9 @@ class Generator():
 
         mapping = self.translate(df)
 
-        return mapping
+        pickle.dump( mapping, open( "county_to_coord.p", "wb" ) )
 
+        return mapping
 
 if __name__ == '__main__':
     'Usage'

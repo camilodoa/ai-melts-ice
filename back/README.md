@@ -1,5 +1,11 @@
 # ai.melts.ice's backend
 
+## getting started
+
+`pip install -r requirements.txt` to download python dependencies
+
+please note that this was all written in python3
+
 # about
 
 `query.py` queries Syracuse's TRAC web API for information on ICE arrests by county
@@ -8,4 +14,4 @@
 
 `ai.py` builds an LSTM model based on the dataset generated with `datasetgenerator.py`. It uses the model and dataset to predict future arrests and saves them in `predictions.csv`
 
-`api.py` starts a RESTful API that serves the data in `predictions.csv`.
+`api.py` starts a RESTful API that serves the data in `predictions.csv`
