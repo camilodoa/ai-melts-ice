@@ -32,19 +32,71 @@ export default function Home({data, today}) {
       map.addSource('ai-melts-ice', {
         type: 'geojson',
         data: data,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 60,
+        clusterProperties: {
+          "arrests_sum": ["+", ['get', 'arrests']]
+        }
       });
       console.log(data);
       map.addLayer({
-        id: 'cirlces',
+        id: 'cluster',
         type: 'circle',
         source: 'ai-melts-ice',
-        filter: [">", 'arrests', 0],
+        filter: [">", 'arrests_sum', 0],
         paint: {
           // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
           // with three steps to implement three types of circles:
           //   * Blue, 20px circles when point count is less than 100
           //   * Yellow, 30px circles when point count is between 100 and 500
           //   * Pink, 40px circles when point count is greater than or equal to 500
+          'circle-color': [
+            'step',
+            ['get', 'arrests_sum'],
+            '#51bbd6',
+            100,
+            '#f1f075',
+            500,
+            '#f28cb1'
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'arrests_sum'],
+            15,
+            100,
+            30,
+            500,
+            50
+          ],
+          'circle-opacity': 0.8
+        }
+      });
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'ai-melts-ice',
+        filter: [">", 'arrests_sum', 0],
+        layout: {
+          'text-field': ['get', 'arrests_sum'],
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': [
+            'step',
+            ['get', 'arrests_sum'],
+            10,
+            100,
+            20,
+            500,
+            40
+          ]
+        }
+      });
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'ai-melts-ice',
+        filter: ["all", ['!has', 'point_count'], [">", 'arrests', 0]],
+        paint: {
           'circle-color': [
             'step',
             ['get', 'arrests'],
@@ -55,31 +107,41 @@ export default function Home({data, today}) {
             '#f28cb1'
           ],
           'circle-radius': [
-            'interpolate', ['linear'], ['zoom'],
-            10, ['/',['get', 'arrests'], 10],
-            13, ['/',['get', 'arrests'], 1]
+            'step',
+            ['get', 'arrests'],
+            15,
+            100,
+            30,
+            500,
+            50
           ],
           'circle-opacity': 0.8
         }
       });
       map.addLayer({
-        id: 'count',
+        id: 'unclustered-count',
         type: 'symbol',
         source: 'ai-melts-ice',
+        filter: ["all", ['!has', 'point_count'], [">", 'arrests', 0]],
         layout: {
           'text-field': ['get', 'arrests'],
           'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': ['interpolate', ['linear'], ['zoom'],
-            10, ['/',['get', 'arrests'], 10],
-            13, ['/',['get', 'arrests'], 1]
+          'text-size': [
+            'step',
+            ['get', 'arrests'],
+            10,
+            100,
+            20,
+            500,
+            40
           ]
         }
       });
 
       // inspect a cluster on click
-      map.on('click', 'arrests', function(e) {
+      map.on('click', 'clusters', function(e) {
         var features = map.queryRenderedFeatures(e.point, {
-          layers: ['cirlces']
+          layers: ['clusters']
         });
         var circleId = features[0].properties.circles_id;
         map.getSource('ai-melts-ice').getClusterExpansionZoom(
