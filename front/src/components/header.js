@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import {withRouter} from 'react-router'
 import logo from '../logo.svg';
 import DatePicker from 'react-datepicker';
 import Navbar from 'react-bootstrap/Navbar';
@@ -8,8 +9,8 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner'
 
 
-export default function Header({mindate, maxdate, fetchdata, settoday}){
-
+function Header({mindate, maxdate, fetchdata, settoday, location}){
+  console.log(location);
   return(
     <Navbar bg='light' expand='lg' sticky='top'>
       <Navbar.Brand href='/'>
@@ -28,19 +29,25 @@ export default function Header({mindate, maxdate, fetchdata, settoday}){
           <Nav.Link href='/about'>
             about
           </Nav.Link>
-          <Nav.Link>
+          <Nav.Link href='/safety'>
             safety
           </Nav.Link>
-          <Nav.Link>
+          <Nav.Link href='/donate'>
             donate
           </Nav.Link>
         </Nav>
 
-        <DateForm
-          maxdate={maxdate}
-          mindate={mindate}
-          fetchdata={fetchdata}
-          settoday={settoday}/>
+        {location.pathname === '/' ?
+
+          <DateForm
+            maxdate={maxdate}
+            mindate={mindate}
+            fetchdata={fetchdata}
+            settoday={settoday}/>
+
+            :
+
+            null}
 
       </Navbar.Collapse>
     </Navbar>
@@ -96,3 +103,5 @@ function LoadingButton({fetchdata, date, settoday}) {
     </Button>
   );
 }
+
+export default withRouter(Header);

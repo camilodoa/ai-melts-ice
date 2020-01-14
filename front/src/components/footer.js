@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Footer() {
   return(
-    <footer className='footer mt-3'>
+    <footer className='footer m-3'>
       <div>
         <p>
           Site and model made and trained with <span role='img' aria-label='Heart'>❤️</span> by <a href='https://camilodoa.ml'>@camilodoa</a>

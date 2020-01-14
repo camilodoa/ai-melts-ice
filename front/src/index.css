@@ -76,7 +76,6 @@ code {
 .about {
   text-align: center;
   background-color: #f2f3f4;
-  min-height: 100vh;
 }
 .about-logo {
   height: 35vmin;
@@ -89,15 +88,27 @@ code {
   justify-content: center;
   font-size: calc(10px + 3vmin);
   color: #808080;
-  min-height:50vh;
 }
 .about-main{
-  display: inline-block;
-  margin: 1rem;
   text-align: left;
-  justify-content: center;
-  width: 50%;
   color: #787878;
+  font-size: calc(10px + 1.5vmin);
+}
+
+/*  safety.js  */
+.safety {
+  background-color: #f2f3f4;
+}
+.safety-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 3vmin);
+  color: #808080;
+}
+.safety-main{
+  text-align: left;
   font-size: calc(10px + 1.5vmin);
 }
 

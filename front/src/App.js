@@ -4,10 +4,12 @@ import Footer from './components/footer';
 import Header from './components/header';
 import Home from './pages/home';
 import About from './pages/about';
+import Safety from './pages/safety';
+import Donate from './pages/donate';
 import {Switch, Route} from 'react-router-dom';
 
 
-export default function App() {
+export default function App({path}) {
   // fetch date range from API
   async function fetchdates(){
     let url = 'http://0.0.0.0:8080/start';
@@ -79,6 +81,12 @@ export default function App() {
           </Route>
           <Route path='/about'>
             <About/>
+          </Route>
+          <Route path='/safety'>
+            <Safety/>
+          </Route>
+          <Route path='/donate'>
+            <Donate/>
           </Route>
         </Switch>
       </div>

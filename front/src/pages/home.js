@@ -23,18 +23,13 @@ export default function Home({data, today}) {
       center: [lng, lat],
       zoom: zoom
     });
-    map.on('move', () => {
-      setlng(map.getCenter().lng.toFixed(4));
-      setlat(map.getCenter().lat.toFixed(4));
-      setzoom(map.getZoom().toFixed(2));
-    });
     map.on('load', () => {
       map.addSource('ai-melts-ice', {
         type: 'geojson',
         data: data,
         cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 60,
+        clusterMaxZoom: 10,
+        clusterRadius: 50,
         clusterProperties: {
           "arrests_sum": ["+", ['get', 'arrests']]
         }
@@ -56,9 +51,9 @@ export default function Home({data, today}) {
             ['get', 'arrests_sum'],
             '#51bbd6',
             100,
-            '#f1f075',
+            '#fce776',
             500,
-            '#f28cb1'
+            '#aa1929'
           ],
           'circle-radius': [
             'step',
@@ -102,9 +97,9 @@ export default function Home({data, today}) {
             ['get', 'arrests'],
             '#51bbd6',
             100,
-            '#f1f075',
+            '#fce776',
             500,
-            '#f28cb1'
+            '#aa1929'
           ],
           'circle-radius': [
             'step',
@@ -139,13 +134,13 @@ export default function Home({data, today}) {
       });
 
       // inspect a cluster on click
-      map.on('click', 'clusters', function(e) {
+      map.on('click', 'cluster', function(e) {
         var features = map.queryRenderedFeatures(e.point, {
-          layers: ['clusters']
+          layers: ['cluster']
         });
-        var circleId = features[0].properties.circles_id;
+        var clusterId = features[0].properties.cluster_id;
         map.getSource('ai-melts-ice').getClusterExpansionZoom(
-          circleId,
+          clusterId,
           function(err, zoom) {
             if (err) return;
 
@@ -155,6 +150,40 @@ export default function Home({data, today}) {
             });
           }
         );
+      });
+
+      map.on('mouseenter', 'cluster', function() {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', 'cluster', function() {
+        map.getCanvas().style.cursor = '';
+      });
+
+      map.on('click', 'unclustered-point', function(e) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = '<div class="my-2"><strong>' + e.features[0].properties.county +
+            '</strong><p>' + e.features[0].properties.arrests + ' arrests</p></div>';
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(description)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', 'unclustered-point', function() {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', 'unclustered-point', function() {
+        map.getCanvas().style.cursor = '';
       });
     });
   };
