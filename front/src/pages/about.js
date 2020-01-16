@@ -7,14 +7,14 @@ import Col from 'react-bootstrap/Col';
 export default function About() {
   return (
     <div className="about">
-      <header className="about-header my-3">
-        <img src={logo} className="about-logo" alt="logo" />
-        <p>
+      <h1 className="about-header my-3">
+        <a href="/"><img src={logo} className="about-logo" alt="logo" /></a>
+        <p className="about-header my-3">
           <a href="/">ai.melts.ice</a>
         </p>
 
-        <p className="about-main">El pueblo unido jamás será vencido.</p>
-      </header>
+        <h6 className="about-main">El pueblo unido jamás será vencido.</h6>
+      </h1>
 
       <main className="about-main">
         <Container>

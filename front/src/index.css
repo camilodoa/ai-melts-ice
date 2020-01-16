@@ -78,7 +78,7 @@ code {
   background-color: #f2f3f4;
 }
 .about-logo {
-  height: 35vmin;
+  height: 30vmin;
   pointer-events: none;
 }
 .about-header {
@@ -98,18 +98,16 @@ code {
 /*  safety.js  */
 .safety {
   background-color: #f2f3f4;
+  color: #808080;
 }
 .safety-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 3vmin);
-  color: #808080;
 }
 .safety-main{
   text-align: left;
-  font-size: calc(10px + 1.5vmin);
 }
 
 /*  header.js  */

@@ -6,6 +6,7 @@ import Home from './pages/home';
 import About from './pages/about';
 import Safety from './pages/safety';
 import Donate from './pages/donate';
+import County from './pages/county';
 import {Switch, Route} from 'react-router-dom';
 
 
@@ -87,6 +88,9 @@ export default function App({path}) {
           </Route>
           <Route path='/donate'>
             <Donate/>
+          </Route>
+          <Route path='/county'>
+            <County/>
           </Route>
         </Switch>
       </div>

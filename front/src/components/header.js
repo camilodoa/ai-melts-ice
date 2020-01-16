@@ -29,6 +29,9 @@ function Header({mindate, maxdate, fetchdata, settoday, location}){
           <Nav.Link href='/about'>
             about
           </Nav.Link>
+          <Nav.Link href='/donate'>
+            data by county
+          </Nav.Link>
           <Nav.Link href='/safety'>
             safety
           </Nav.Link>

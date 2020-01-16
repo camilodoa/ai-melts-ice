@@ -28,7 +28,7 @@ export default function Home({data, today}) {
         type: 'geojson',
         data: data,
         cluster: true,
-        clusterMaxZoom: 10,
+        clusterMaxZoom: 4,
         clusterRadius: 50,
         clusterProperties: {
           "arrests_sum": ["+", ['get', 'arrests']]
@@ -49,9 +49,9 @@ export default function Home({data, today}) {
           'circle-color': [
             'step',
             ['get', 'arrests_sum'],
-            '#51bbd6',
-            100,
             '#fce776',
+            100,
+            '#ec5300',
             500,
             '#aa1929'
           ],
@@ -95,9 +95,9 @@ export default function Home({data, today}) {
           'circle-color': [
             'step',
             ['get', 'arrests'],
-            '#51bbd6',
-            100,
             '#fce776',
+            100,
+            '#ec5300',
             500,
             '#aa1929'
           ],
@@ -162,7 +162,11 @@ export default function Home({data, today}) {
 
       map.on('click', 'unclustered-point', function(e) {
         var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = '<div class="my-2"><strong>' + e.features[0].properties.county +
+        var description = e.features[0].properties.arrests === 1 ?
+            '<div class="my-2"><strong>' + e.features[0].properties.county +
+            '</strong><p>' + e.features[0].properties.arrests + ' arrest</p></div>'
+            :
+            '<div class="my-2"><strong>' + e.features[0].properties.county +
             '</strong><p>' + e.features[0].properties.arrests + ' arrests</p></div>';
 
         // Ensure that if the map is zoomed out such that multiple
