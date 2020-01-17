@@ -110,6 +110,16 @@ code {
   text-align: left;
 }
 
+/* county.js */
+.county-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #808080;
+  min-height:80vh;
+}
+
 /*  header.js  */
 .react-datepicker-wrapper,
 .react-datepicker__input-container,

@@ -35,8 +35,8 @@ def invalid_usage(error):
     return response
 
 
-@api.route('/start', methods=['GET'])
-def start():
+@api.route('/dates', methods=['GET'])
+def dates():
     'Returns list of predicted dates'
 
     predictions = pd.read_csv('predictions.csv', encoding = 'utf8')
@@ -100,6 +100,30 @@ def toGJSON(data):
         geoJSON['features'].append(element)
 
     return geoJSON
+
+@api.route('/counties', methods=['GET'])
+def counties():
+    'Returns list of counties'
+
+    data = pd.read_csv('data.csv', encoding = 'utf8').drop(['Date'], axis=1)
+
+    response = jsonify({'data' : data.columns.values.tolist()})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    print(response)
+    return response
+
+@api.route('/countydata/<string:county>', methods=['GET'])
+def countydata(county):
+    'Returns data associated with speficied county'
+
+    data = pd.read_csv('data.csv', encoding = 'utf8')
+
+    response = jsonify({'data' : data.columns.values.tolist()})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    print(response)
+    return response
 
 
 if __name__ == '__main__':

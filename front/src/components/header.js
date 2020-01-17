@@ -10,7 +10,6 @@ import Spinner from 'react-bootstrap/Spinner'
 
 
 function Header({mindate, maxdate, fetchdata, settoday, location}){
-  console.log(location);
   return(
     <Navbar bg='light' expand='lg' sticky='top'>
       <Navbar.Brand href='/'>
@@ -29,7 +28,7 @@ function Header({mindate, maxdate, fetchdata, settoday, location}){
           <Nav.Link href='/about'>
             about
           </Nav.Link>
-          <Nav.Link href='/donate'>
+          <Nav.Link href='/county'>
             data by county
           </Nav.Link>
           <Nav.Link href='/safety'>

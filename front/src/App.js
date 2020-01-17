@@ -8,12 +8,13 @@ import Safety from './pages/safety';
 import Donate from './pages/donate';
 import County from './pages/county';
 import {Switch, Route} from 'react-router-dom';
+import api from './rest';
 
 
 export default function App({path}) {
   // fetch date range from API
   async function fetchdates(){
-    let url = 'http://0.0.0.0:8080/start';
+    let url = api.root + '/dates';
     return await fetch(url).then(
       r => r.text()
     ).then(
@@ -41,7 +42,7 @@ export default function App({path}) {
 
   // fetch date data from API
   async function fetchdata(date){
-    let url = 'http://0.0.0.0:8080/predict/<month>/<year>';
+    let url = '/predict/<month>/<year>';
     url = url.replace('<month>', date.getMonth() + 1).replace('<year>', date.getFullYear())
     return await fetch(url).then(
       r => r.text()
