@@ -100,7 +100,7 @@ export default function County() {
         <Container fluid>
           <Row className="align-items-md-center justify-content-md-center">
             <Col>
-              <div className='sidebarStyle'>{countydata.county}</div>
+              <div className='sidebarStyle'>{here}</div>
               <div className='mt-5'>
                 <XYPlot
                 xType="time"

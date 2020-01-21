@@ -32,13 +32,12 @@ export default function Home() {
         type: 'geojson',
         data: datedata,
         cluster: true,
-        clusterMaxZoom: 4,
+        clusterMaxZoom: 5,
         clusterRadius: 50,
         clusterProperties: {
           "arrests_sum": ["+", ['get', 'arrests']]
         }
       });
-      console.log(datedata);
       map.addLayer({
         id: 'cluster',
         type: 'circle',
@@ -191,7 +190,6 @@ export default function Home() {
     });
   };
 
-
   // date data fetch functions + state =========================================
 
   // fetch date range from API
@@ -251,7 +249,6 @@ export default function Home() {
     // get date and US info
     fetchdates();
     fetchdatedata(today);
-
   }, []);
 
   // updates on change of date data
@@ -270,7 +267,6 @@ export default function Home() {
         fetchdatedata={fetchdatedata}
         settoday={settoday}/>
 
-      <div>
         { datedata === null ?
           <header className='body'>
             <img src={logo} className='logo' alt='logo'/>
@@ -288,7 +284,6 @@ export default function Home() {
             <div ref={el => mapContainer = el} className='mapContainer' />
           </div>
         }
-      </div>
 
     </div>
   );

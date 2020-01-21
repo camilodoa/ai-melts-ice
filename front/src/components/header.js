@@ -28,18 +28,18 @@ function Header( {
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav'>
-        <Nav className='mr-auto navbar-right'>
+        <Nav className='mr-auto'>
           <Nav.Link href='/about'>
-            about
+            About
           </Nav.Link>
           <Nav.Link href='/county'>
-            data by county
+            Data by County
           </Nav.Link>
           <Nav.Link href='/safety'>
-            safety
+            Safety
           </Nav.Link>
           <Nav.Link href='/donate'>
-            donate
+            Donate
           </Nav.Link>
         </Nav>
 
@@ -98,23 +98,25 @@ function CountyForm({counties, fetchcountydata, sethere}){
   return (
     <div>
       <Form
-        inline
-        onSubmit={(e) => {
-          e.preventDefault();
-          fetchcountydata(county);
-          sethere(county);
-        }}>
+      inline
+      onSubmit={(e) => {
+        e.preventDefault();
+        fetchcountydata(county);
+        sethere(county);
+      }}>
         <FormControl
-          className="mr-sm-2"
-          as="select"
-          value={county}
-          onChange={(e) => setcounty(e.target.value)}>
+        className="mr-sm-2"
+        sm="4"
+        as="select"
+        value={county}
+        onChange={(e) => setcounty(e.target.value)}>
           {
             counties.counties.map((county, index) =>
               <option key={'county' + index}>{county}</option>
             )
           }
         </FormControl>
+        {' '}
         <LoadingButton variable={county} fetch={fetchcountydata} setvariable={sethere}/>
       </Form>
     </div>

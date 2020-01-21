@@ -59,15 +59,13 @@ export default function Safety() {
     <div>
       <Header/>
 
-      <div>
-
         <div className="my-5">
           <Container>
             <Row className="justify-content-md-center">
               <Col>
                 <h3 className="safety-main my-3 mx-5 pull-left">
                   <p>
-                    if you are undocumented:
+                    Helpful links if you are undocumented:
                   </p>
                 </h3>
                 <main className="mx-5">
@@ -87,7 +85,7 @@ export default function Safety() {
               <Col>
               <h3 className="safety-main my-3 mx-5">
                 <p>
-                  if you are are an ally:
+                  Helpful links if you are are an ally:
                 </p>
               </h3>
               <main className="m-3 mx-5">
@@ -100,7 +98,6 @@ export default function Safety() {
           </Container>
         </div>
 
-      </div>
     </div>
   );
 }
