@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/static/css/main.3bf0de86.chunk.css",
-    "main.js": "/static/js/main.2de3c495.chunk.js",
-    "main.js.map": "/static/js/main.2de3c495.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.3f7b73e3.js",
-    "runtime-main.js.map": "/static/js/runtime-main.3f7b73e3.js.map",
-    "static/css/2.3f058e1e.chunk.css": "/static/css/2.3f058e1e.chunk.css",
-    "static/js/2.c3c83baa.chunk.js": "/static/js/2.c3c83baa.chunk.js",
-    "static/js/2.c3c83baa.chunk.js.map": "/static/js/2.c3c83baa.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.941af9197322c55863b20e2295bf87b2.js": "/precache-manifest.941af9197322c55863b20e2295bf87b2.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.3f058e1e.chunk.css.map": "/static/css/2.3f058e1e.chunk.css.map",
-    "static/css/main.3bf0de86.chunk.css.map": "/static/css/main.3bf0de86.chunk.css.map",
-    "static/js/2.c3c83baa.chunk.js.LICENSE": "/static/js/2.c3c83baa.chunk.js.LICENSE",
-    "static/media/logo.svg": "/static/media/logo.6408dacb.svg"
+    "main.css": "/ai-melts-ice/static/css/main.3bf0de86.chunk.css",
+    "main.js": "/ai-melts-ice/static/js/main.6d55571a.chunk.js",
+    "main.js.map": "/ai-melts-ice/static/js/main.6d55571a.chunk.js.map",
+    "runtime-main.js": "/ai-melts-ice/static/js/runtime-main.72d1efcb.js",
+    "runtime-main.js.map": "/ai-melts-ice/static/js/runtime-main.72d1efcb.js.map",
+    "static/css/2.3f058e1e.chunk.css": "/ai-melts-ice/static/css/2.3f058e1e.chunk.css",
+    "static/js/2.c3c83baa.chunk.js": "/ai-melts-ice/static/js/2.c3c83baa.chunk.js",
+    "static/js/2.c3c83baa.chunk.js.map": "/ai-melts-ice/static/js/2.c3c83baa.chunk.js.map",
+    "index.html": "/ai-melts-ice/index.html",
+    "precache-manifest.90c305a311586f05ae541f5d34267a0c.js": "/ai-melts-ice/precache-manifest.90c305a311586f05ae541f5d34267a0c.js",
+    "service-worker.js": "/ai-melts-ice/service-worker.js",
+    "static/css/2.3f058e1e.chunk.css.map": "/ai-melts-ice/static/css/2.3f058e1e.chunk.css.map",
+    "static/css/main.3bf0de86.chunk.css.map": "/ai-melts-ice/static/css/main.3bf0de86.chunk.css.map",
+    "static/js/2.c3c83baa.chunk.js.LICENSE": "/ai-melts-ice/static/js/2.c3c83baa.chunk.js.LICENSE",
+    "static/media/logo.svg": "/ai-melts-ice/static/media/logo.6408dacb.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.3f7b73e3.js",
+    "static/js/runtime-main.72d1efcb.js",
     "static/css/2.3f058e1e.chunk.css",
     "static/js/2.c3c83baa.chunk.js",
     "static/css/main.3bf0de86.chunk.css",
-    "static/js/main.2de3c495.chunk.js"
+    "static/js/main.6d55571a.chunk.js"
   ]
 }
