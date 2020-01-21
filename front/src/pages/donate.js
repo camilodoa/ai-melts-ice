@@ -14,7 +14,7 @@ export default function Donate() {
           <Col>
             <h3 className="my-5 mx-5 text-center">
               <p>
-                If you want to help support the site:
+                If you want to help support hosting the site:
               </p>
             </h3>
             <main className="mx-5">

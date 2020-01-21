@@ -8,14 +8,14 @@ import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
+import Col from 'react-bootstrap/Col';
 
 
 function Header( {
   mindate, maxdate, fetchdatedata, settoday, location,
   counties, fetchcountydata, sethere} ){
   return(
-    <Navbar bg='light' expand='lg' sticky='top'>
+    <Navbar bg='light' expand='lg' sticky='top' >
       <Navbar.Brand href='/'>
         <img
           alt=''
@@ -29,11 +29,14 @@ function Header( {
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav'>
         <Nav className='mr-auto'>
-          <Nav.Link href='/about'>
-            About
+          <Nav.Link href='/'>
+            Map
           </Nav.Link>
           <Nav.Link href='/county'>
-            Data by County
+            Arrests by County
+          </Nav.Link>
+          <Nav.Link href='/about'>
+            About
           </Nav.Link>
           <Nav.Link href='/safety'>
             Safety
@@ -104,20 +107,24 @@ function CountyForm({counties, fetchcountydata, sethere}){
         fetchcountydata(county);
         sethere(county);
       }}>
-        <FormControl
-        className="mr-sm-2"
-        sm="4"
-        as="select"
-        value={county}
-        onChange={(e) => setcounty(e.target.value)}>
-          {
-            counties.counties.map((county, index) =>
-              <option key={'county' + index}>{county}</option>
-            )
-          }
-        </FormControl>
-        {' '}
-        <LoadingButton variable={county} fetch={fetchcountydata} setvariable={sethere}/>
+        <Form.Row>
+          <Col xs>
+            <Form.Control
+            className="mr-sm-2"
+            as="select"
+            value={county}
+            onChange={(e) => setcounty(e.target.value)}>
+              {
+                counties.counties.map((county, index) =>
+                  <option key={'county' + index}>{county}</option>
+                )
+              }
+            </Form.Control>
+          </Col>
+          <Col>
+            <LoadingButton variable={county} fetch={fetchcountydata} setvariable={sethere}/>
+          </Col>
+        </Form.Row>
       </Form>
     </div>
   );
