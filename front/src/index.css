@@ -1,6 +1,8 @@
 /*  globals  */
 @import "../node_modules/react-datepicker/dist/react-datepicker.css";
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
+@import '../node_modules/react-vis/dist/style.css';
+
 
 /*  index.js  */
 body {
@@ -18,23 +20,18 @@ code {
 /*  App.js  */
 .App {
   text-align: center;
-  background-color: #f2f3f4;
   min-height: 100vh;
 }
 .App a:link{
-  color: #707070;
   text-decoration: none;
 }
 .App a:hover{
-  color: #707070;
   text-decoration: none;
 }
 .App a:active{
-  color: #707070;
   text-decoration: none;
 }
 .App a:visited{
-  color: #707070;
   text-decoration: none;
 }
 
@@ -49,7 +46,6 @@ code {
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 3vmin);
-  color: #808080;
   min-height:60vh;
 }
 .mapContainer {
@@ -75,7 +71,7 @@ code {
 /*  about.js  */
 .about {
   text-align: center;
-  background-color: #f2f3f4;
+
 }
 .about-logo {
   height: 30vmin;
@@ -96,10 +92,7 @@ code {
 }
 
 /*  safety.js  */
-.safety {
-  background-color: #f2f3f4;
-  color: #808080;
-}
+
 .safety-header {
   display: flex;
   flex-direction: column;
@@ -110,15 +103,6 @@ code {
   text-align: left;
 }
 
-/* county.js */
-.county-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #808080;
-  min-height:80vh;
-}
 
 /*  header.js  */
 .react-datepicker-wrapper,

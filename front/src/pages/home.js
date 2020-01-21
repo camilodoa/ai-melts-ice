@@ -1,20 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Header from '../components/header';
 import logo from '../logo.svg';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
+import api from '../rest';
+
 
 mapboxgl.accessToken = token.mapBoxToken;
 
-export default function Home({data, today}) {
+export default function Home() {
 
+  // map render functions + state ==============================================
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   let mapContainer = useRef();
-  const [lng, setlng] = useState(-96);
-  const [lat, setlat] = useState(40);
-  const [zoom, setzoom] = useState(4);
+  const [lng] = useState(-96);
+  const [lat] = useState(40);
+  const [zoom] = useState(4);
 
   function getMap() {
     const map = new mapboxgl.Map({
@@ -26,7 +30,7 @@ export default function Home({data, today}) {
     map.on('load', () => {
       map.addSource('ai-melts-ice', {
         type: 'geojson',
-        data: data,
+        data: datedata,
         cluster: true,
         clusterMaxZoom: 4,
         clusterRadius: 50,
@@ -34,18 +38,13 @@ export default function Home({data, today}) {
           "arrests_sum": ["+", ['get', 'arrests']]
         }
       });
-      console.log(data);
+      console.log(datedata);
       map.addLayer({
         id: 'cluster',
         type: 'circle',
         source: 'ai-melts-ice',
         filter: [">", 'arrests_sum', 0],
         paint: {
-          // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
-          // with three steps to implement three types of circles:
-          //   * Blue, 20px circles when point count is less than 100
-          //   * Yellow, 30px circles when point count is between 100 and 500
-          //   * Pink, 40px circles when point count is greater than or equal to 500
           'circle-color': [
             'step',
             ['get', 'arrests_sum'],
@@ -192,32 +191,104 @@ export default function Home({data, today}) {
     });
   };
 
+
+  // date data fetch functions + state =========================================
+
+  // fetch date range from API
+  async function fetchdates(){
+    let url = api.root + '/dates';
+    return await fetch(url).then(
+      r => r.text()
+    ).then(
+      r => r = JSON.parse(r)
+    ).then(r => {
+      let minstr = r[0].split('-');
+      let minyear = parseInt(minstr[0]);
+      let minmonth = parseInt(minstr[1]);
+
+      let maxstr = r[r.length - 1].split('-');
+      let maxyear = parseInt(maxstr[0]);
+      let maxmonth = parseInt(maxstr[1]);
+
+      return [new Date(minyear, minmonth), new Date(maxyear, maxmonth)]
+    }).then(date => {
+      setmindate(date[0]);
+      setmaxdate(date[1]);
+    }).catch(
+      err => console.log(err)
+    );
+  }
+
+  // fetch date data from API
+  async function fetchdatedata(date){
+    let url = api.root + '/predict/<month>/<year>';
+    url = url.replace('<month>', date.getMonth() + 1).replace('<year>', date.getFullYear())
+    return await fetch(url).then(
+      r => r.text()
+    ).then(
+      r => r = JSON.parse(r)
+    ).then(r => {
+        setdatedata(r);
+      }
+    ).catch(
+      err => console.log(err)
+    );
+  }
+
+  // min and max state
+  const[mindate, setmindate] = useState(new Date(2015, 1));
+  const [maxdate, setmaxdate] = useState(new Date(2021, 12));
+  // date data state
+  const [datedata, setdatedata] = useState(null);
+  // current date that data is being displayed for
+  const [today, settoday] = useState(new Date() <= maxdate ? new Date() : maxdate);
+
+
+  // lifecycle functions =======================================================
+
+  // component did mount
   useEffect(() => {
-    if (data !== null){
+    // get date and US info
+    fetchdates();
+    fetchdatedata(today);
+
+  }, []);
+
+  // updates on change of date data
+  useEffect(() => {
+    if (datedata !== null) {
       getMap();
     }
-  }, [data]);
+  }, [datedata]);
 
   return (
     <div>
 
-    { data === null ?
-      <header className='body'>
-        <img src={logo} className='logo' alt='logo'/>
-        <p>
-          ai.melts.ice
-        </p>
-      </header>
+      <Header
+        mindate={mindate}
+        maxdate={maxdate}
+        fetchdatedata={fetchdatedata}
+        settoday={settoday}/>
 
-      :
       <div>
-        <div className='sidebarStyle'>
-          <div>{monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
-        </div>
+        { datedata === null ?
+          <header className='body'>
+            <img src={logo} className='logo' alt='logo'/>
+            <p>
+              ai.melts.ice
+            </p>
+          </header>
 
-        <div ref={el => mapContainer = el} className='mapContainer' />
+          :
+          <div>
+            <div className='sidebarStyle'>
+              <div>{monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
+            </div>
+
+            <div ref={el => mapContainer = el} className='mapContainer' />
+          </div>
+        }
       </div>
-    }
 
     </div>
   );

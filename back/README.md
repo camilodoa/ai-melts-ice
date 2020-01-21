@@ -4,7 +4,10 @@
 
 `pip install -r requirements.txt` to download python dependencies
 
+`python api.py` to start the REST API
+
 please note that this was all written in python3
+
 
 # about
 

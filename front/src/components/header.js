@@ -6,10 +6,14 @@ import DatePicker from 'react-datepicker';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
-import Spinner from 'react-bootstrap/Spinner'
+import Spinner from 'react-bootstrap/Spinner';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
 
 
-function Header({mindate, maxdate, fetchdata, settoday, location}){
+function Header( {
+  mindate, maxdate, fetchdatedata, settoday, location,
+  counties, fetchcountydata, sethere} ){
   return(
     <Navbar bg='light' expand='lg' sticky='top'>
       <Navbar.Brand href='/'>
@@ -44,8 +48,19 @@ function Header({mindate, maxdate, fetchdata, settoday, location}){
           <DateForm
             maxdate={maxdate}
             mindate={mindate}
-            fetchdata={fetchdata}
+            fetchdatedata={fetchdatedata}
             settoday={settoday}/>
+
+            :
+
+            null}
+
+        {location.pathname === '/county' ?
+
+          <CountyForm
+          counties={counties}
+          fetchcountydata={fetchcountydata}
+          sethere={sethere}/>
 
             :
 
@@ -56,7 +71,7 @@ function Header({mindate, maxdate, fetchdata, settoday, location}){
   );
 }
 
-function DateForm({mindate, maxdate, fetchdata, settoday}){
+function DateForm({mindate, maxdate, fetchdatedata, settoday}){
 
   const [date, setdate] = useState(new Date());
 
@@ -71,23 +86,53 @@ function DateForm({mindate, maxdate, fetchdata, settoday}){
         placeholderText='Select a month'
         showMonthYearPicker/>
       {' '}
-      <LoadingButton date={date} fetchdata={fetchdata} settoday={settoday}/>
+      <LoadingButton variable={date} fetch={fetchdatedata} setvariable={settoday}/>
     </div>
   );
 }
 
-function LoadingButton({fetchdata, date, settoday}) {
+function CountyForm({counties, fetchcountydata, sethere}){
+
+  const [county, setcounty] = useState(counties.counties[0]);
+
+  return (
+    <div>
+      <Form
+        inline
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchcountydata(county);
+          sethere(county);
+        }}>
+        <FormControl
+          className="mr-sm-2"
+          as="select"
+          value={county}
+          onChange={(e) => setcounty(e.target.value)}>
+          {
+            counties.counties.map((county, index) =>
+              <option key={'county' + index}>{county}</option>
+            )
+          }
+        </FormControl>
+        <LoadingButton variable={county} fetch={fetchcountydata} setvariable={sethere}/>
+      </Form>
+    </div>
+  );
+}
+
+function LoadingButton({fetch, variable, setvariable}) {
 
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isLoading) {
-      fetchdata(date).then(r => {
+      fetch(variable).then(r => {
         setLoading(false);
       });
-      settoday(date)
+      setvariable(variable)
     }
-  }, [isLoading, date]);
+  }, [isLoading, variable]);
 
   const handleClick = () => setLoading(true);
 
@@ -95,6 +140,7 @@ function LoadingButton({fetchdata, date, settoday}) {
     <Button
       variant='outline-primary'
       className='mr-1 non-resizing'
+      type='submit'
       disabled={isLoading}
       onClick={!isLoading ? handleClick : null}
     >

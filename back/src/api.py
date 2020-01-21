@@ -107,19 +107,30 @@ def counties():
 
     data = pd.read_csv('data.csv', encoding = 'utf8').drop(['Date'], axis=1)
 
-    response = jsonify({'data' : data.columns.values.tolist()})
+    response = jsonify({'counties' : data.columns.values.tolist()})
     response.headers.add('Access-Control-Allow-Origin', '*')
 
-    print(response)
     return response
 
 @api.route('/countydata/<string:county>', methods=['GET'])
 def countydata(county):
     'Returns data associated with speficied county'
 
-    data = pd.read_csv('data.csv', encoding = 'utf8')
+    county.replace('%20', ' ')
+    predictions = pd.read_csv('predictions.csv', encoding = 'utf8')
 
-    response = jsonify({'data' : data.columns.values.tolist()})
+    response = {
+        'county' : county,
+        'data' : []
+    }
+
+    for prediction in predictions[[county, 'Date']].values.tolist():
+        response['data'].append({
+            'date' : prediction[1],
+            'arrests' : prediction[0]
+        })
+
+    response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')
 
     print(response)
