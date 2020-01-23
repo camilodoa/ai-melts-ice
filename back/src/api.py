@@ -116,7 +116,6 @@ def counties():
 def countydata(county):
     'Returns data associated with speficied county'
 
-    county.replace('%20', ' ')
     predictions = pd.read_csv('predictions.csv', encoding = 'utf8')
 
     response = {
