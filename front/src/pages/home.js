@@ -18,7 +18,7 @@ export default function Home() {
   let mapContainer = useRef();
   const [lng] = useState(-96);
   const [lat] = useState(40);
-  const [zoom] = useState(4);
+  const [zoom] = useState(2);
 
   function getMap() {
     const map = new mapboxgl.Map({
@@ -33,7 +33,7 @@ export default function Home() {
         data: datedata,
         cluster: true,
         clusterMaxZoom: 5,
-        clusterRadius: 50,
+        clusterRadius: 60,
         clusterProperties: {
           "arrests_sum": ["+", ['get', 'arrests']]
         }
@@ -56,11 +56,11 @@ export default function Home() {
           'circle-radius': [
             'step',
             ['get', 'arrests_sum'],
-            15,
+            10,
             100,
-            30,
+            20,
             500,
-            50
+            30
           ],
           'circle-opacity': 0.8
         }
@@ -78,9 +78,9 @@ export default function Home() {
             ['get', 'arrests_sum'],
             10,
             100,
-            20,
+            15,
             500,
-            40
+            25
           ]
         }
       });

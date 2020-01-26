@@ -8,11 +8,10 @@ export default function Donate() {
   return (
     <div>
       <Header/>
-
-      <Container className='my-5'>
+      <Container className='my-2'>
         <Row className="justify-content-md-center">
           <Col>
-            <h3 className="my-5 mx-5 text-center">
+            <h3 className=" mx-5 text-center">
               <p>
                 If you want to help support hosting the site:
               </p>
@@ -23,9 +22,6 @@ export default function Donate() {
           </Col>
         </Row>
       </Container>
-
-
-
     </div>
   );
 }

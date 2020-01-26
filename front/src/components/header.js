@@ -47,26 +47,20 @@ function Header( {
         </Nav>
 
         {location.pathname === '/' ?
-
           <DateForm
             maxdate={maxdate}
             mindate={mindate}
             fetchdatedata={fetchdatedata}
             settoday={settoday}/>
-
             :
-
             null}
 
         {location.pathname === '/county' ?
-
           <CountyForm
           counties={counties}
           fetchcountydata={fetchcountydata}
           sethere={sethere}/>
-
             :
-
             null}
 
       </Navbar.Collapse>
@@ -156,7 +150,7 @@ function LoadingButton({fetch, variable, setvariable}) {
       {isLoading ?
         <Spinner as='span' role='status' animation='border' variant='primary' size='sm' />
         :
-        'search'}
+        'Search'}
     </Button>
   );
 }

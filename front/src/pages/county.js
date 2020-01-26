@@ -27,14 +27,13 @@ export default function County() {
     ).then(
       r => r = JSON.parse(r)
     ).then(r => {
-      setcountydata(r);
 
       let localdata = r.data.map(datapoint => (
         {x : new Date(datapoint.date.split('-')[0], datapoint.date.split('-')[1]),
          y : datapoint.arrests}
       ));
 
-      setdata(localdata);
+      setcountydata(localdata);
 
       console.log(r);
     }).catch(
@@ -65,9 +64,6 @@ export default function County() {
   // current county
   const [here, sethere] = useState("Accomack County, VA");
 
-  // displayed data
-  const [data, setdata] = useState(null);
-
   const [value, setvalue] = useState(null);
 
   const size = useWindowSize();
@@ -87,16 +83,14 @@ export default function County() {
         fetchcountydata={fetchcountydata}
         sethere={sethere}/>
 
-      { data === null ?
+      { countydata === null ?
         <header className='body'>
           <img src={logo} className='logo' alt='logo'/>
           <p>
             ai.melts.ice
           </p>
         </header>
-
         :
-
         <Container fluid>
           <Row className="align-items-md-center justify-content-md-center">
             <Col>
@@ -114,16 +108,15 @@ export default function County() {
                   <LineMarkSeries
                   onValueMouseOver={(e) => setvalue(e)}
                   onValueMouseOut={(e) => setvalue(null)}
-                  data={data}
-                  color='#4285F4'/>
+                  data={countydata}
+                  color='#4285F4'
+                  size={2}/>
                   {value ? <Hint value={value} /> : null}
                 </XYPlot>
               </div>
             </Col>
           </Row>
         </Container>
-
-
       }
     </div>
   );

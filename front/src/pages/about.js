@@ -9,17 +9,14 @@ export default function About() {
   return (
     <div>
       <Header/>
-
       <div className="about">
         <h1 className="about-header my-3 mt-5">
           <a href="/"><img src={logo} className="about-logo" alt="logo" /></a>
           <p className="about-header my-3">
             <a href="/">ai.melts.ice</a>
           </p>
-
           <p className="about-main">El pueblo unido jamás será vencido.</p>
         </h1>
-
         <main className="about-main">
           <Container>
             <Row>

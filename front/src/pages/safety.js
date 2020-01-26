@@ -58,8 +58,7 @@ export default function Safety() {
   return (
     <div>
       <Header/>
-
-        <div className="my-5">
+        <div className="my-2">
           <Container>
             <Row className="justify-content-md-center">
               <Col>
@@ -69,7 +68,6 @@ export default function Safety() {
                   </p>
                 </h3>
                 <main className="mx-5">
-
                   <ListGroup>
                     {undocumented_link_group}
                   </ListGroup>
@@ -78,7 +76,6 @@ export default function Safety() {
             </Row>
           </Container>
         </div>
-
         <div className="my-5">
           <Container>
             <Row className="justify-content-md-center">
@@ -97,7 +94,6 @@ export default function Safety() {
             </Row>
           </Container>
         </div>
-
     </div>
   );
 }
