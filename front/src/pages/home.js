@@ -4,6 +4,7 @@ import logo from '../logo.svg';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
 import api from '../rest';
+import useWindowSize from '../hooks/window';
 
 
 mapboxgl.accessToken = token.mapBoxToken;
@@ -15,10 +16,12 @@ export default function Home() {
   'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
+  const size = useWindowSize();
+
   let mapContainer = useRef();
   const [lng] = useState(-96);
   const [lat] = useState(40);
-  const [zoom] = useState(2);
+  const [zoom] = useState(size.width < 400 ? 2 : 3);
 
   function getMap() {
     const map = new mapboxgl.Map({

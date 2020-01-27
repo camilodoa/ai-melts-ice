@@ -1,7 +1,8 @@
 import React from "react";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../rest';
 import logo from '../logo.svg';
+import useWindowSize from '../hooks/window';
 import Header from '../components/header';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -14,7 +15,6 @@ import {
   LineMarkSeries,
   XYPlot,
   Hint,
-  ChartLabel
 } from 'react-vis';
 
 
@@ -120,33 +120,4 @@ export default function County() {
       }
     </div>
   );
-}
-
-// windowsize hook
-function useWindowSize() {
-  const isClient = typeof window === 'object';
-
-  function getSize() {
-    return {
-      width: isClient ? window.innerWidth : undefined,
-      height: isClient ? window.innerHeight : undefined
-    };
-  }
-
-  const [windowSize, setWindowSize] = useState(getSize);
-
-  useEffect(() => {
-    if (!isClient) {
-      return false;
-    }
-
-    function handleResize() {
-      setWindowSize(getSize());
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []); // Empty array ensures that effect is only run on mount and unmount
-
-  return windowSize;
 }

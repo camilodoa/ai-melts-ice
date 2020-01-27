@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Link from 'react-router-dom/Link';
 
 
 function Header( {
@@ -29,20 +30,30 @@ function Header( {
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav'>
         <Nav className='mr-auto'>
-          <Nav.Link href='/'>
-            Map
+          <Nav.Link>
+            <Link to='/'>
+              Map
+            </Link>
           </Nav.Link>
-          <Nav.Link href='/county'>
-            Arrests by County
+          <Nav.Link>
+            <Link to='/county'>
+              Arrests by County
+            </Link>
           </Nav.Link>
-          <Nav.Link href='/about'>
-            About
+          <Nav.Link>
+            <Link to='/about'>
+              About
+            </Link>
           </Nav.Link>
-          <Nav.Link href='/safety'>
-            Safety
+          <Nav.Link>
+            <Link to='/safety'>
+              Safety
+            </Link>
           </Nav.Link>
-          <Nav.Link href='/donate'>
-            Donate
+          <Nav.Link>
+            <Link to='/donate'>
+              Donate
+            </Link>
           </Nav.Link>
         </Nav>
 
