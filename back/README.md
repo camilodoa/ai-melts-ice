@@ -9,7 +9,7 @@
 please note that this was all written in python3
 
 
-# about
+## about
 
 `query.py` queries Syracuse's TRAC web API for information on ICE arrests by county
 

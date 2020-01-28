@@ -15,8 +15,11 @@ import Link from 'react-router-dom/Link';
 function Header( {
   mindate, maxdate, fetchdatedata, settoday, location,
   counties, fetchcountydata, sethere} ){
+
+    const [expanded, setexpanded] = useState(false);
+
   return(
-    <Navbar bg='light' expand='lg' sticky='top' >
+    <Navbar bg='light' expand='lg' sticky='top' onToggle={setexpanded} expanded={expanded}>
       <Navbar.Brand href='/'>
         <img
           alt=''
@@ -62,7 +65,8 @@ function Header( {
             maxdate={maxdate}
             mindate={mindate}
             fetchdatedata={fetchdatedata}
-            settoday={settoday}/>
+            settoday={settoday}
+            setexpanded={setexpanded}/>
             :
             null}
 
@@ -70,7 +74,8 @@ function Header( {
           <CountyForm
           counties={counties}
           fetchcountydata={fetchcountydata}
-          sethere={sethere}/>
+          sethere={sethere}
+          setexpanded={setexpanded}/>
             :
             null}
 
@@ -79,7 +84,7 @@ function Header( {
   );
 }
 
-function DateForm({mindate, maxdate, fetchdatedata, settoday}){
+function DateForm({mindate, maxdate, fetchdatedata, settoday, setexpanded}){
 
   const [date, setdate] = useState(new Date());
 
@@ -94,12 +99,16 @@ function DateForm({mindate, maxdate, fetchdatedata, settoday}){
         placeholderText='Select a month'
         showMonthYearPicker/>
       {' '}
-      <LoadingButton variable={date} fetch={fetchdatedata} setvariable={settoday}/>
+      <LoadingButton
+        variable={date}
+        fetch={fetchdatedata}
+        setvariable={settoday}
+        setexpanded={setexpanded}/>
     </div>
   );
 }
 
-function CountyForm({counties, fetchcountydata, sethere}){
+function CountyForm({counties, fetchcountydata, sethere, setexpanded}){
 
   const [county, setcounty] = useState(counties.counties[0]);
 
@@ -127,7 +136,11 @@ function CountyForm({counties, fetchcountydata, sethere}){
             </Form.Control>
           </Col>
           <Col>
-            <LoadingButton variable={county} fetch={fetchcountydata} setvariable={sethere}/>
+            <LoadingButton
+              variable={county}
+              fetch={fetchcountydata}
+              setvariable={sethere}
+              setexpanded={setexpanded}/>
           </Col>
         </Form.Row>
       </Form>
@@ -135,7 +148,7 @@ function CountyForm({counties, fetchcountydata, sethere}){
   );
 }
 
-function LoadingButton({fetch, variable, setvariable}) {
+function LoadingButton({fetch, variable, setvariable, setexpanded}) {
 
   const [isLoading, setLoading] = useState(false);
 
@@ -144,7 +157,8 @@ function LoadingButton({fetch, variable, setvariable}) {
       fetch(variable).then(r => {
         setLoading(false);
       });
-      setvariable(variable)
+      setvariable(variable);
+      setexpanded(false);
     }
   }, [isLoading, variable]);
 
