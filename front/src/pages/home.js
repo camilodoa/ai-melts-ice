@@ -21,7 +21,7 @@ export default function Home() {
   let mapContainer = useRef();
   const [lng] = useState(-96);
   const [lat] = useState(40);
-  const [zoom] = useState(size.width < 400 ? 2 : 3);
+  const [zoom] = useState(size.width < 550 ? 2 : 3);
 
   function getMap() {
     const map = new mapboxgl.Map({
