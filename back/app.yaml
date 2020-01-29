@@ -1,2 +1,0 @@
-runtime: python37
-entrypoint: python api.py
