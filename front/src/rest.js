@@ -1,3 +1,3 @@
 export default {
-  root: 'http://0.0.0.0:8080'
+  root: 'https://ai-melts-ice.appspot.com'
 }
