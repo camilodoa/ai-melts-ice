@@ -18,19 +18,23 @@ class Generator():
 
 
     def fetch(self, county):
-        'Queries Syracuse DB for data on a particular county, based on #'
+        '''
+        Queries Syracuse DB for data on a particular county, based on #
+        '''
 
         s = Syracuse()
         return s.query(str(county))
 
 
     def fill(self):
-        'Fills out empty Pandas DF with Syracuse data'
+        '''
+        Fills out empty Pandas DF with Syracuse data
+        '''
 
         s = Syracuse()
         df = pd.DataFrame()
 
-        'Create dictionary to make the transition to dataset easier'
+        # Create dictionary to make the transition to dataset easier
         dict = {}
 
         for county in range(s.counties):
@@ -49,7 +53,7 @@ class Generator():
 
                 dict[date][county] = int(point['number'])
 
-        'Transfer dictionary layout to dataset'
+        # Transfer dictionary layout to dataset
         for data in dict.values():
             df = df.append(data, ignore_index = True, sort = False)
 
@@ -61,7 +65,9 @@ class Generator():
 
 
     def initialize(self):
-        'Initializes and saves Syracuse data to file (data.csv)'
+        '''
+        Initializes and saves Syracuse data to file (data.csv)
+        '''
 
         df = self.fill()
 
@@ -80,7 +86,9 @@ class Generator():
 
 
     def split(self, df, n_steps):
-        'Splits dataset into X Y pairs for network'
+        '''
+        Splits dataset into X Y pairs for network
+        '''
 
         sequences = df.values
 
@@ -101,7 +109,9 @@ class Generator():
 
 
     def convert(self, df, n_steps, lo, hi):
-        'Converts dataset into X input for network'
+        '''
+        Converts dataset into X input for network
+        '''
 
         sequences = df.values
 
@@ -114,7 +124,9 @@ class Generator():
 
 
     def translate(self, df):
-        'Translates county names to coordinate points'
+        '''
+        Translates county names to coordinate points
+        '''
 
         geolocator = Nominatim(user_agent="ai-melts-ice", timeout=None)
         mapping = {}
@@ -129,7 +141,9 @@ class Generator():
 
 
     def prepMapping(self):
-        'Used to save the pickled dict for translating county to coord'
+        '''
+        Used to save the pickled dict for translating county to coord
+        '''
 
         df = pd.read_csv('data.csv', encoding = 'utf8').drop(['Date'], axis = 1)
 

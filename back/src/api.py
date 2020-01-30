@@ -5,11 +5,14 @@ import pickle
 import json
 
 
-# REST API
+# REST API definition
 api = Flask(__name__)
 
 
 class InvalidUsage(Exception):
+    '''
+    API error message handler class
+    '''
     status_code = 400
 
     def __init__(self, message, status_code=None, payload=None):
@@ -30,19 +33,30 @@ class InvalidUsage(Exception):
 
 @api.errorhandler(InvalidUsage)
 def invalid_usage(error):
+    '''
+    Send error message
+    '''
+
+    # Define the response
     response = jsonify(error.to_dict())
+
+    # Add status code
     response.status_code = error.status_code
+
     return response
 
 
 @api.route('/dates', methods=['GET'])
 def dates():
-    'Returns list of predicted dates'
+    '''
+    Return list of predicted dates
+    '''
 
+    # Load predicted dataset
     predictions = pd.read_csv('predictions.csv', encoding = 'utf8')
 
+    # Define response with all of the dates in dataset
     response = jsonify(predictions['Date'].values.tolist())
-    response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
 
@@ -51,25 +65,33 @@ def dates():
 def predict(month, year):
     'Returns prediction for month year'
 
+    # Convert requested month and year to datetime object
     target = datetime(year, month, 1)
+    # Convert datetime to string
     target_str = target.strftime("%-m/%-d/%Y")
 
+    # Load predictions and parse dates
     predictions = pd.read_csv('predictions.csv', infer_datetime_format = True,
         parse_dates = ['Date'], encoding = 'utf8')
 
+    # Keep only the dates
     dates = predictions['Date']
 
+    # Find start and end dates
     start, end = dates.iloc[0], dates.iloc[-1]
 
+    # If requested date is outside of the dataset, send error
     if target < start or target > end:
         raise InvalidUsage('This date is outside our dataset', status_code = 410)
 
+    # Lookup date with datetime string and convert it into a dictionary
     data = predictions[predictions['Date'] == target_str].drop(['Date'], axis=1).to_dict(orient = 'records')[0]
 
+    # Convert the dictionary into a GeoJSON dictionary
     data = toGJSON(data)
 
+    # Define the response
     response = jsonify(data)
-    response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
 
@@ -77,13 +99,16 @@ def predict(month, year):
 def toGJSON(data):
     'Turns {city : arrests} dictionary into geoJSON for mapbox'
 
+    # Define base of the GeoJSON dictionary
     geoJSON = {
         'type' : 'FeatureCollection',
         'features' : []
     }
 
+    # Load {county : coordinate} dictionary from file
     mapping = pickle.load( open( 'county_to_coord.p', 'rb' ) )
 
+    # For each county arrest pair in data, create a GeoJson location
     for county, arrests in data.items():
         element = {
             'type' : 'Feature',
@@ -96,7 +121,7 @@ def toGJSON(data):
                 'coordinates' : mapping.get(county)
             }
         }
-
+        # Add element to GeoJSON object
         geoJSON['features'].append(element)
 
     return geoJSON
@@ -105,10 +130,11 @@ def toGJSON(data):
 def counties():
     'Returns list of counties'
 
+    # Load dataset and drop dates
     data = pd.read_csv('data.csv', encoding = 'utf8').drop(['Date'], axis=1)
 
+    # Define the response
     response = jsonify({'counties' : data.columns.values.tolist()})
-    response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
 
@@ -116,25 +142,28 @@ def counties():
 def countydata(county):
     'Returns data associated with speficied county'
 
+    # Load prediction dataset
     predictions = pd.read_csv('predictions.csv', encoding = 'utf8')
 
+    # Initialize response dictionary
     response = {
         'county' : county,
         'data' : []
     }
 
+    # Add each prediction as a dictionary
     for prediction in predictions[[county, 'Date']].values.tolist():
         response['data'].append({
             'date' : prediction[1],
             'arrests' : prediction[0]
         })
 
+    # Define response
     response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
 
-    print(response)
     return response
 
 
 if __name__ == '__main__':
+    'Usage'
     api.run(host='0.0.0.0',port=8080)
