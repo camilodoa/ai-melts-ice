@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>404 page not found</title>
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      // https://github.com/rafrex/spa-github-pages
+      // Copyright (c) 2016 Rafael Pedicini, licensed under the MIT License
+      // ----------------------------------------------------------------------
+      var segmentCount = 0;
+
+      var l = window.location;
+      const nonHomeUrls = ['/about', '/county', '/donate', '/home', '/safety'];
+        for (let i = 0; i < nonHomeUrls.length; i++) {
+          const urlRegex = new RegExp(nonHomeUrls[i], 'i');
+          const verifyUrl = urlRegex.test(l.pathname);
+          if (!verifyUrl) {
+            l.replace(
+              l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+              l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
+              l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+              (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+              l.hash
+            );
+          }
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
