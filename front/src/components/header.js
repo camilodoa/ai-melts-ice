@@ -53,11 +53,6 @@ function Header( {
               Safety
             </Link>
           </Nav.Link>
-          <Nav.Link>
-            <Link to='/donate'>
-              Donate
-            </Link>
-          </Nav.Link>
         </Nav>
 
         {location.pathname === '/' ?

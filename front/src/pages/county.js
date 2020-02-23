@@ -7,6 +7,7 @@ import Header from '../components/header';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Spinner from 'react-bootstrap/Spinner'
 import {
   HorizontalGridLines,
   VerticalGridLines,
@@ -89,6 +90,7 @@ export default function County() {
           <p>
             ai.melts.ice
           </p>
+          <Spinner animation="grow" variant="primary" role="status"/>
         </header>
         :
         <Container fluid>

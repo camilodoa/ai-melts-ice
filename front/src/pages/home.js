@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Header from '../components/header';
+import Spinner from 'react-bootstrap/Spinner';
 import logo from '../logo.svg';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
@@ -276,6 +277,7 @@ export default function Home() {
             <p>
               ai.melts.ice
             </p>
+            <Spinner animation="grow" variant="primary" role="status"/>
           </header>
 
           :
