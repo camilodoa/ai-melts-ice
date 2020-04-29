@@ -277,7 +277,7 @@ export default function Home() {
             <p>
               ai.melts.ice
             </p>
-            <Spinner animation="grow" variant="primary" role="status"/>
+            <Spinner animation="border" variant="dark" role="status"/>
           </header>
 
           :

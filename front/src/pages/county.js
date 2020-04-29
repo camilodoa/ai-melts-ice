@@ -36,7 +36,6 @@ export default function County() {
 
       setcountydata(localdata);
 
-      console.log(r);
     }).catch(
       err => console.log(err)
     );
@@ -90,7 +89,7 @@ export default function County() {
           <p>
             ai.melts.ice
           </p>
-          <Spinner animation="grow" variant="primary" role="status"/>
+          <Spinner animation="border" variant="dark" role="status"/>
         </header>
         :
         <Container fluid>

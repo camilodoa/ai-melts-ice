@@ -34,7 +34,7 @@ function Header( {
       <Navbar.Collapse id='basic-navbar-nav'>
         <Nav className='mr-auto'>
           <Nav.Link>
-            <Link exact to='/'>
+            <Link to='/'>
               Map
             </Link>
           </Nav.Link>
