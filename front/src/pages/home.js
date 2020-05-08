@@ -25,10 +25,10 @@ export default function Home() {
   const [zoom] = useState(size.width < 550 ? 2 : 3);
 
   function getMap() {
-    const radiusSizes = [ 30, 100, 40, 500, 60];
+    const radiusSizes = size.width < 550 ? [ 30, 100, 40, 500, 50] : [ 30, 100, 40, 500, 60];
     const fontSizes = [ 20, 100, 30, 500, 40];
     const colors = ['#ffcc00', 100, '#ff9966', 500, '#cc3300'];
-    const opacity = 0.9;
+    const opacity = 0.7;
     const map = new mapboxgl.Map({
       container: mapContainer,
       style: 'mapbox://styles/camilodoa/ck9xqloge1g0f1ipj4y85tkzh',
@@ -171,12 +171,12 @@ export default function Home() {
             '<div class="about-main py-2" style="line-height: 1.5;"><strong class="my-3">' +
               e.features[0].properties.county +
             '</strong><p class="my-3">' +
-            e.features[0].properties.arrests + ' arrest</p></div>'
+            e.features[0].properties.arrests + ' arrest.</p></div>'
             :
             '<div class="about-main py-2" style="line-height: 1.5;"><strong class="my-3">' +
             e.features[0].properties.county +
             '</strong><p class="my-3">' +
-            e.features[0].properties.arrests + ' arrests</p></div>';
+            e.features[0].properties.arrests + ' arrests.</p></div>';
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -286,7 +286,7 @@ export default function Home() {
           :
           <div className='map'>
             <div className='sidebarStyle'>
-              <div>{monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
+              <div>{'Arrests in '}{monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
             </div>
             <div ref={el => mapContainer = el} className='mapContainer' />
           </div>
