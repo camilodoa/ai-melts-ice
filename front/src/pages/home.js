@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Header from '../components/header';
 import Spinner from 'react-bootstrap/Spinner';
-import logo from '../logo.svg';
+import logo from '../images/logo512.png';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
 import api from '../rest';
@@ -25,9 +25,13 @@ export default function Home() {
   const [zoom] = useState(size.width < 550 ? 2 : 3);
 
   function getMap() {
+    const radiusSizes = [ 30, 100, 40, 500, 60];
+    const fontSizes = [ 20, 100, 30, 500, 40];
+    const colors = ['#ffcc00', 100, '#ff9966', 500, '#cc3300'];
+    const opacity = 0.9;
     const map = new mapboxgl.Map({
       container: mapContainer,
-      style: 'mapbox://styles/mapbox/light-v10',
+      style: 'mapbox://styles/camilodoa/ck9xqloge1g0f1ipj4y85tkzh',
       center: [lng, lat],
       zoom: zoom
     });
@@ -51,22 +55,22 @@ export default function Home() {
           'circle-color': [
             'step',
             ['get', 'arrests_sum'],
-            '#fce776',
-            100,
-            '#ec5300',
-            500,
-            '#aa1929'
+            colors[0],
+            colors[1],
+            colors[2],
+            colors[3],
+            colors[4]
           ],
           'circle-radius': [
             'step',
             ['get', 'arrests_sum'],
-            10,
-            100,
-            20,
-            500,
-            30
+            radiusSizes[0],
+            radiusSizes[1],
+            radiusSizes[2],
+            radiusSizes[3],
+            radiusSizes[4]
           ],
-          'circle-opacity': 0.8
+          'circle-opacity': opacity
         }
       });
       map.addLayer({
@@ -80,11 +84,11 @@ export default function Home() {
           'text-size': [
             'step',
             ['get', 'arrests_sum'],
-            10,
-            100,
-            15,
-            500,
-            25
+            fontSizes[0],
+            fontSizes[1],
+            fontSizes[2],
+            fontSizes[3],
+            fontSizes[4]
           ]
         }
       });
@@ -97,22 +101,22 @@ export default function Home() {
           'circle-color': [
             'step',
             ['get', 'arrests'],
-            '#fce776',
-            100,
-            '#ec5300',
-            500,
-            '#aa1929'
+            colors[0],
+            colors[1],
+            colors[2],
+            colors[3],
+            colors[4]
           ],
           'circle-radius': [
             'step',
             ['get', 'arrests'],
-            15,
-            100,
-            30,
-            500,
-            50
+            radiusSizes[0],
+            radiusSizes[1],
+            radiusSizes[2],
+            radiusSizes[3],
+            radiusSizes[4]
           ],
-          'circle-opacity': 0.8
+          'circle-opacity': opacity
         }
       });
       map.addLayer({
@@ -126,15 +130,14 @@ export default function Home() {
           'text-size': [
             'step',
             ['get', 'arrests'],
-            10,
-            100,
-            20,
-            500,
-            40
+            fontSizes[0],
+            fontSizes[1],
+            fontSizes[2],
+            fontSizes[3],
+            fontSizes[4]
           ]
         }
       });
-
       // inspect a cluster on click
       map.on('click', 'cluster', function(e) {
         var features = map.queryRenderedFeatures(e.point, {
@@ -165,11 +168,15 @@ export default function Home() {
       map.on('click', 'unclustered-point', function(e) {
         var coordinates = e.features[0].geometry.coordinates.slice();
         var description = e.features[0].properties.arrests === 1 ?
-            '<div class="my-2"><strong>' + e.features[0].properties.county +
-            '</strong><p>' + e.features[0].properties.arrests + ' arrest</p></div>'
+            '<div class="about-main py-2" style="line-height: 1.5;"><strong class="my-3">' +
+              e.features[0].properties.county +
+            '</strong><p class="my-3">' +
+            e.features[0].properties.arrests + ' arrest</p></div>'
             :
-            '<div class="my-2"><strong>' + e.features[0].properties.county +
-            '</strong><p>' + e.features[0].properties.arrests + ' arrests</p></div>';
+            '<div class="about-main py-2" style="line-height: 1.5;"><strong class="my-3">' +
+            e.features[0].properties.county +
+            '</strong><p class="my-3">' +
+            e.features[0].properties.arrests + ' arrests</p></div>';
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -245,7 +252,6 @@ export default function Home() {
   // current date that data is being displayed for
   const [today, settoday] = useState(new Date() <= maxdate ? new Date() : maxdate);
 
-
   // lifecycle functions =======================================================
 
   // component did mount
@@ -264,32 +270,27 @@ export default function Home() {
 
   return (
     <div>
-
       <Header
         mindate={mindate}
         maxdate={maxdate}
         fetchdatedata={fetchdatedata}
         settoday={settoday}/>
-
-        { datedata === null ?
+        {
+          datedata === null ?
           <header className='body'>
-            <img src={logo} className='logo' alt='logo'/>
             <p>
-              ai.melts.ice
+              ai melts ice
             </p>
-            <Spinner animation="border" variant="dark" role="status"/>
+            <Spinner animation="grow" variant="dark" role="status"/>
           </header>
-
           :
-          <div>
+          <div className='map'>
             <div className='sidebarStyle'>
               <div>{monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
             </div>
-
             <div ref={el => mapContainer = el} className='mapContainer' />
           </div>
         }
-
     </div>
   );
 }

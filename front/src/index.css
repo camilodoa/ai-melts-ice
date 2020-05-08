@@ -7,7 +7,7 @@
 /*  index.js  */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -47,6 +47,11 @@ code {
   font-size: calc(10px + 3vmin);
   min-height:60vh;
 }
+.map {
+  margin: 0;
+  height: 100%;
+  overflow: hidden
+}
 .mapContainer {
   position: absolute;
   top: 0;
@@ -60,11 +65,12 @@ code {
   top: 10;
   left: 0;
   margin: 12px;
-  background-color: #404040;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #1b1e21;
   z-index: 1 !important;
-  padding: 6px;
-  font-weight: bold;
+  padding: 1rem;
+  font-weight: 1000;
+  font-size: calc(10px + 3vmin);
 }
 
 /*  about.js  */
@@ -76,7 +82,7 @@ code {
   height: 30vmin;
   pointer-events: none;
 }
-.about-header {
+.header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,6 +121,7 @@ code {
 .non-resizing{
   min-width: 80px;
 }
+
 
 /*  footer.js  */
 .footer {

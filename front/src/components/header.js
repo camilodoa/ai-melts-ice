@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import {withRouter} from 'react-router'
-import logo from '../logo.svg';
 import DatePicker from 'react-datepicker';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -9,7 +8,6 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
-import Link from 'react-router-dom/Link';
 
 
 function Header( {
@@ -21,37 +19,16 @@ function Header( {
   return(
     <Navbar bg='light' expand='lg' sticky='top' onToggle={setexpanded} expanded={expanded}>
       <Navbar.Brand href='/'>
-        <img
-          alt=''
-          src={logo}
-          width='30'
-          height='30'
-          className='d-inline-block align-top'
-        />{' '}
-        ai.melts.ice
+        ai melts ice
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav'>
         <Nav className='mr-auto'>
-          <Nav.Link>
-            <Link to='/'>
-              Map
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to='/county'>
-              Arrests by County
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to='/about'>
-              About
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to='/safety'>
-              Safety
-            </Link>
+          {/*<Nav.Link href='/county'>*/}
+          {/*  Arrests by County*/}
+          {/*</Nav.Link>*/}
+          <Nav.Link href='/about'>
+            About
           </Nav.Link>
         </Nav>
 

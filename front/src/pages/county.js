@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from 'react';
 import api from '../rest';
-import logo from '../logo.svg';
+import logo from '../images/logo512.png';
 import useWindowSize from '../hooks/window';
 import Header from '../components/header';
 import Container from 'react-bootstrap/Container';
