@@ -88,11 +88,11 @@ code {
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 3vmin);
-  color: #808080;
+  color: #1b1e21;
 }
 .about-main{
   text-align: left;
-  color: #787878;
+  color: #1b1e21;
   font-size: calc(10px + 1.5vmin);
 }
 

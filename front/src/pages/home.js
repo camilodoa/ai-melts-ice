@@ -279,7 +279,7 @@ export default function Home() {
           datedata === null ?
           <header className='body'>
             <p>
-              ai melts ice
+              AI Melts ICE
             </p>
             <Spinner animation="grow" variant="dark" role="status"/>
           </header>

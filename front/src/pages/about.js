@@ -13,7 +13,7 @@ export default function About() {
         <h1 className="header my-3 mt-5">
           <a href="/"><img src={logo} className="about-logo" alt="logo" /></a>
           <p className="header my-3">
-            <a href="/">ai.melts.ice</a>
+            AI Melts ICE
           </p>
           <p className="about-main">El pueblo unido jamás será vencido.</p>
         </h1>
