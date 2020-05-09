@@ -80,6 +80,8 @@ class Predictor():
         # Fit model
         history = model.fit(self.X, self.Y, epochs = 1000, callbacks=[early_stop])
 
+        print(history)
+
         # Save model
         model.save('model.h5')
 

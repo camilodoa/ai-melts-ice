@@ -2,11 +2,10 @@ from flask import Flask, jsonify
 from datetime import datetime
 import pandas as pd
 import pickle
-import json
 
 
 # REST API definition
-api = Flask(__name__)
+app = Flask(__name__)
 
 
 class InvalidUsage(Exception):
@@ -31,7 +30,7 @@ class InvalidUsage(Exception):
 
         return rv
 
-@api.errorhandler(InvalidUsage)
+@app.errorhandler(InvalidUsage)
 def invalid_usage(error):
     '''
     Send error message
@@ -46,7 +45,7 @@ def invalid_usage(error):
     return response
 
 
-@api.route('/dates', methods=['GET'])
+@app.route('/dates', methods=['GET'])
 def dates():
     '''
     Return list of predicted dates
@@ -64,7 +63,7 @@ def dates():
     return response
 
 
-@api.route('/predict/<int:month>/<int:year>', methods=['GET'])
+@app.route('/predict/<int:month>/<int:year>', methods=['GET'])
 def predict(month, year):
     'Returns prediction for month year'
 
@@ -84,11 +83,6 @@ def predict(month, year):
     data = pd.read_csv('data.csv', infer_datetime_format = True, parse_dates = ['Date'], encoding = 'utf8')
     data = data['Date']
     prediction_start = data.iloc[-1]
-    print(prediction_start)
-    if target >= prediction_start:
-        print('prediction')
-    else:
-        print('not a prediction')
 
     # Find start and end dates
     start, end = dates.iloc[0], dates.iloc[-1]
@@ -144,7 +138,7 @@ def toGJSON(data):
 
     return geoJSON
 
-@api.route('/counties', methods=['GET'])
+@app.route('/counties', methods=['GET'])
 def counties():
     'Returns list of counties'
 
@@ -159,7 +153,7 @@ def counties():
 
     return response
 
-@api.route('/countydata/<string:county>', methods=['GET'])
+@app.route('/countydata/<string:county>', methods=['GET'])
 def countydata(county):
     'Returns data associated with speficied county'
 
@@ -190,4 +184,4 @@ def countydata(county):
 
 if __name__ == '__main__':
     'Usage'
-    api.run(host='0.0.0.0',port=8080)
+    app.run(host='0.0.0.0',port=8080)
