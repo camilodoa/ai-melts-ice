@@ -69,8 +69,8 @@ code {
   color: #1b1e21;
   z-index: 1 !important;
   padding: 1rem;
-  font-weight: 1000;
-  font-size: calc(10px + 3vmin);
+  font-weight: normal;
+  font-size: calc(10px + 2vmin);
 }
 
 /*  about.js  */

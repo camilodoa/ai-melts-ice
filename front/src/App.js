@@ -1,5 +1,4 @@
 import React from 'react';
-import Footer from './components/footer';
 import Home from './pages/home';
 import About from './pages/about';
 import Safety from './pages/safety';

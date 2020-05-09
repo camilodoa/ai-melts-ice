@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Header from '../components/header';
 import Spinner from 'react-bootstrap/Spinner';
-import logo from '../images/logo512.png';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
 import api from '../rest';
@@ -22,7 +21,7 @@ export default function Home() {
   let mapContainer = useRef();
   const [lng] = useState(-96);
   const [lat] = useState(40);
-  const [zoom] = useState(size.width < 550 ? 2 : 3);
+  const [zoom] = useState(size.width < 550 ? 2 : 3.6);
 
   function getMap() {
     const radiusSizes = size.width < 550 ? [ 30, 100, 40, 500, 50] : [ 30, 100, 40, 500, 60];
@@ -38,7 +37,7 @@ export default function Home() {
     map.on('load', () => {
       map.addSource('ai-melts-ice', {
         type: 'geojson',
-        data: datedata,
+        data: datedata['data'],
         cluster: true,
         clusterMaxZoom: 5,
         clusterRadius: 60,
@@ -171,12 +170,12 @@ export default function Home() {
             '<div class="about-main py-2" style="line-height: 1.5;"><strong class="my-3">' +
               e.features[0].properties.county +
             '</strong><p class="my-3">' +
-            e.features[0].properties.arrests + ' arrest.</p></div>'
+            e.features[0].properties.arrests + ' arrest</p></div>'
             :
             '<div class="about-main py-2" style="line-height: 1.5;"><strong class="my-3">' +
             e.features[0].properties.county +
             '</strong><p class="my-3">' +
-            e.features[0].properties.arrests + ' arrests.</p></div>';
+            e.features[0].properties.arrests + ' arrests</p></div>';
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -199,7 +198,7 @@ export default function Home() {
         map.getCanvas().style.cursor = '';
       });
     });
-  };
+  }
 
   // date data fetch functions + state =========================================
 
@@ -286,7 +285,12 @@ export default function Home() {
           :
           <div className='map'>
             <div className='sidebarStyle'>
-              <div>{'Arrests in '}{monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
+              <div>{datedata?
+                      datedata['prediction'] ?
+                        'Predicted arrests for '
+                        :
+                        'Arrests from ' : null}
+              {monthNames[today.getMonth()]}{' '}{today.getFullYear()}</div>
             </div>
             <div ref={el => mapContainer = el} className='mapContainer' />
           </div>
