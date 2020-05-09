@@ -17,4 +17,4 @@ please note that this was all written in python3
 
 `ai.py` builds an LSTM model based on the dataset generated with `datasetgenerator.py`. It uses the model and dataset to predict future arrests and saves them in `predictions.csv`
 
-`api.py` starts a RESTful API that serves the data in `predictions.csv`
+`main.py` starts a RESTful API that serves the data in `predictions.csv`

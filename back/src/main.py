@@ -80,6 +80,16 @@ def predict(month, year):
     # Keep only the dates
     dates = predictions['Date']
 
+    # Find where predictions start
+    data = pd.read_csv('data.csv', infer_datetime_format = True, parse_dates = ['Date'], encoding = 'utf8')
+    data = data['Date']
+    prediction_start = data.iloc[-1]
+    print(prediction_start)
+    if target >= prediction_start:
+        print('prediction')
+    else:
+        print('not a prediction')
+
     # Find start and end dates
     start, end = dates.iloc[0], dates.iloc[-1]
 
@@ -90,11 +100,13 @@ def predict(month, year):
     # Lookup date with datetime string and convert it into a dictionary
     data = predictions[predictions['Date'] == target_str].drop(['Date'], axis=1).to_dict(orient = 'records')[0]
 
-    # Convert the dictionary into a GeoJSON dictionary
-    data = toGJSON(data)
+    response = {
+        'prediction' :  True if target >= prediction_start else False,
+        'data' : toGJSON(data)
+    }
 
     # Define the response
-    response = jsonify(data)
+    response = jsonify(response)
 
     # Cross origin
     response.headers.add('Access-Control-Allow-Origin', '*')
