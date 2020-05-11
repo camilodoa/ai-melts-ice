@@ -1,6 +1,6 @@
 requests
 pandas
-keras==2.2.5
-tensorflow
 Flask
 geopy
+keras==2.2.5
+Tensorflow==1.14

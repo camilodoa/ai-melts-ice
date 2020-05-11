@@ -118,7 +118,7 @@ def toGJSON(data):
     }
 
     # Load {county : coordinate} dictionary from file
-    mapping = pickle.load( open( 'county_to_coord.p', 'rb' ) )
+    mapping = pickle.load( open( 'county_to_coordinate.p', 'rb' ) )
 
     # For each county arrest pair in data, create a GeoJson location
     for county, arrests in data.items():
