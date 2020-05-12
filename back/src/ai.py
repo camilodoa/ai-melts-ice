@@ -6,72 +6,101 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
+from tensorflow.keras.callbacks import History
 
-class Ai():
+class Learner():
     '''
     Predictor class. Used to build() and fit() a Keras LSTM model to
     make predictions of the future with predict(month, year).
     '''
-
-    def __init__(self):
+    def __init__(self, t = 5, split = 0.70, epochs = 1000, num_layers = 6,
+                neurons = 100,
+                layers = [
+                    Dense(200, activation = 'sigmoid'),
+                    Dense(300, activation = 'relu'),
+                    Dense(500, activation = 'sigmoid'),
+                    LSTM(150, activation = 'relu')
+                ], optimizer = 'adam', loss = 'mse', verbose = 0):
         '''
         Initialize class variables for network training
         '''
         # Initialize dataset generator class
         g = Generator()
-        # Based on generator configurations, initialize a new dataset
-        if g.reinit:
-            g.initialize()
         # Read in dataset into pandas DataFrame object
         df = pd.read_csv('data.csv', infer_datetime_format = True, parse_dates = ['Date'])
         # Sort values by date (earliest dates first)
         df = df.sort_values('Date').drop(['Date'], axis = 1)
-        # Each prediction will be based on n_steps data points before it
-        self.n_steps = 12
+        # Split into test and training
+        self.split = split
+        # Split remains the same among all Ai instances
+        train, test = df.iloc[0:int(len(df) * self.split)], df.iloc[int(len(df) * self.split):len(df)]
         # Split dataset into X Y pairs
-        self.X, self.Y = g.split(df, self.n_steps)
-        # Define output layer size
-        self.n_features = self.X.shape[2]
+        self.X_train, self.Y_train = g.split(train, t)
+        self.X_test, self.Y_test = g.split(test, t)
+        # Define self.output_size layer size
+        self.output_size = self.X_train.shape[2]
+        # Parameters
+        # Each prediction will be based on t data points before it
+        self.t = t
+        # How many epochs to train for
+        self.epochs = epochs
+        self.num_layers = num_layers
+        self.layers = layers
+        self.neurons = neurons
+        self.optimizer = 'adam'
+        self.loss = 'mse'
+        self.error = None
+        self.verbose = verbose
 
     def build(self):
         '''
         Build a Keras LSTM network with three layers: LSTM, LSTM, Dense
         '''
         # Define the model
-        model = Sequential()
-        # Define the model's input's shape
-        input_shape = (self.n_steps, self.n_features)
-        # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(100, activation = 'relu', return_sequences = True, input_shape = input_shape))
-        # Add the second LSTM layer
-        model.add(LSTM(200, activation = 'relu'))
-        # Add the final Dense layer
-        model.add(Dense(self.n_features))
+        self.model = Sequential()
+        # Define the self.model's input's shape
+        input_shape = (self.t, self.output_size)
+        # Add the first LSTM layer with an input shape of t for each county
+        self.model.add(LSTM(self.neurons, activation = 'relu', return_sequences = True, input_shape = input_shape))
+        # Add customizable layers
+        for layer in self.layers:
+            self.model.add(layer)
+        # Output layer
+        self.model.add(Dense(self.output_size))
         # Compile the model
-        model.compile(optimizer = 'adam', loss = 'mse')
-        return model
+        self.model.compile(optimizer = self.optimizer, loss = self.loss)
+        # Get description
+        if self.verbose: self.model.summary()
+        return self.model
 
-    def fit(self):
+    def fit(self, type = 'evaluation'):
         '''
-        Fit the keras model
+        Fit the keras self.model
         '''
+        if self.error is not None: return self.error
         # Build model
-        model = self.build()
+        self.model = self.build()
+        self.history = History()
         # Fit model
-        history = model.fit(self.X, self.Y, epochs = 1000)
-        print(history)
-        # Save model
-        model.save('model.h5')
-        return model
+        self.history = self.model.fit(self.X_train, self.Y_train, epochs = self.epochs, callbacks=[self.history], verbose=self.verbose)
+        # assign fitness
+        self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
+        return self.error
 
+    def save(self, name):
+        '''
+        Save self.model
+        '''
+        self.model.save('models/model{0}.h5'.format(name))
+        return self.model
 
     def predict_forward(self, month, year):
         '''
         Generate predictions until month year (greater than 2014) and write them to
         predictions.csv
         '''
-        if os.path.isfile('model.h5'): model = load_model('model.h5')
-        else: model = self.fit()
+        if os.path.isfile('model.h5'): self.model = load_model('model.h5')
+        else: self.model = self.fit()
         # Load dataset
         df = pd.read_csv('data.csv', infer_datetime_format=True, parse_dates=['Date'])
         # Extract last recorded date
@@ -80,19 +109,19 @@ class Ai():
         if year < date.year: return None
         # Calculate difference between last date in dataset and the date given
         diff = (year - date.year) * 12 + month - date.month
-        # Drop dates, they are not a part of the input of our NN model
+        # Drop dates, they are not a part of the input of our NN self.model
         df.drop(['Date'], axis = 1)
         # Generate predictions for each month in difference
         g = Generator()
         for i in range(diff):
             # Convert last 12 months into data
-            data = g.convert(df, self.n_steps, -self.n_steps, 0)
-            # Use data to predict with the model
-            predictions = model.predict(data)
-            # Update current prediction date
+            data = g.convert(df, self.t, -self.t, 0)
+            # Use data to predict with the self.model
+            predictions = self.model.predict(data)
+            # Update current  date
             date = date + relativedelta(months = 1)
             # Only keep integer predictions - negative predictions are set to 0
-            predictions = {city : int( round( max(prediction, 0) ) ) for city, prediction in zip(df.columns, predictions[0])}
+            predictions = {city : int(round(max(prediction, 0))) for city, prediction in zip(df.columns, predictions[0])}
             # Append prediction to the predictions dataset (without date column)
             df = df.append(predictions, ignore_index = True)
             # Add date field to the prediction dictionary
@@ -103,9 +132,20 @@ class Ai():
         df.to_csv('predictions.csv', index = False)
         return predictions
 
+    def genome(self):
+        return {
+            't' : self.t,
+            'split' : self.split,
+            'epochs' : self.epochs,
+            'num_layers' : self.num_layers,
+            'neurons' : self.neurons,
+            'layers' : self.layers,
+            'optimizer' : self.optimizer,
+            'loss' : self.loss
+        }
+
 if __name__ == '__main__':
     'Usage'
-    a = Ai()
-    a.fit()
+    primis = Learner(verbose=1)
+    primis.fit()
     # a.predict_forward(12, 2021)
-

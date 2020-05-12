@@ -1,7 +1,7 @@
 # Project-specific
 ai-melts-ice/
 .DS_Store
-
+.idea/
 # Python
 
 # Byte-compiled / optimized / DLL files
