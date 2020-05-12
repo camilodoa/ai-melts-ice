@@ -185,7 +185,7 @@ class Exelixi():
         new_layers = []
 
         # If there are not enough layers, add some
-        if num_layers > len(layers): new_layers += self.generate_layers(num_layers - len(layers))
+        if num_layers > len(layers): layers += self.generate_layers(num_layers - len(layers))
         # For every layer we have, we have a probability of mutation
         for i in range(num_layers):
             # If we are mutating this layer
