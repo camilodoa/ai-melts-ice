@@ -181,9 +181,11 @@ class Exelixi():
         elif new_neurons < self.min_neurons: return self.min_neurons
         else: return new_neurons
 
-    def mutate_layers(self, layers, num_layers = None):
-        if num_layers is None: num_layers = len(layers)
+    def mutate_layers(self, layers, num_layers):
         new_layers = []
+
+        # If there are not enough layers, add some
+        if num_layers > len(layers): new_layers += self.generate_layers(num_layers - len(layers))
         # For every layer we have, we have a probability of mutation
         for i in range(num_layers):
             # If we are mutating this layer
@@ -194,8 +196,8 @@ class Exelixi():
                 new_layer = random.choice(list(self.layer_options.values()))
                 # Randomly pick an activation function
                 activation = random.choice(self.activation_functions)
-
                 new_layers.append(new_layer(neurons, activation))
+
         return new_layers
 
     def mutate_optimizer(self, optimizer):
@@ -284,7 +286,7 @@ class Exelixi():
         fittest = self.fittest()
         fittest.model.summary()
         print({'generation' : self.generation,
-            'best-fitness' : fittest.fit(type = self.fitness),
+            'best-error' : fittest.fit(type = self.fitness),
             'best-genome' : fittest.genome()}, '\n\n')
 
 
@@ -304,6 +306,6 @@ class Exelixi():
 
 if __name__ == '__main__':
     'Usage'
-    world = Exelixi(4, 20)
+    world = Exelixi(10, 20)
     fittest = world.aetas()
     fittest.save()
