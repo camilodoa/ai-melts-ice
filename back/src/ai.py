@@ -91,7 +91,8 @@ class Learner():
         '''
         Save self.model
         '''
-        self.model.save('models/model{0}.h5'.format(name))
+        self.model.save('models/{0}.h5'.format(name))
+        print('Saved model to models/{0}.h5'.format(name))
         return self.model
 
     def predict_forward(self, month, year):

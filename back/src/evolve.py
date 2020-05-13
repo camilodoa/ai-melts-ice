@@ -20,17 +20,14 @@ class Exelixi():
         self.population = []
         # Desired population size
         self.capacity = size
-        # Number of babies parents try to have
-        self.natality = 5
         # Tournament size
-        self.tournament = 3
+        self.tournament = 5
         # Mutation probabilities
-        self.mutation = 0.1
-        self.layer_mutation = 0.2
+        self.mutation = 0.2
+        self.layer_mutation = 0.3
         # Layer possibilities
         self.layer_options = {'Dense': Dense, 'LSTM': LSTM}
-        self.activation_functions = [
-            'relu', 'tanh', 'sigmoid', 'softmax']
+        self.activation_functions = ['relu', 'tanh', 'sigmoid', 'softmax']
         # Model parameters
         self.optimizer_options = [
             'Adam', 'SGD', 'RMSprop', 'Adadelta', 'Adagrad', 'Adamax', 'Nadam',
@@ -49,9 +46,9 @@ class Exelixi():
         self.min_epochs = 100
         self.max_epochs = 1000
         self.min_num_layers = 2
-        self.max_num_layers = 10
+        self.max_num_layers = 15
         self.min_neurons = 32
-        self.max_neurons = 700
+        self.max_neurons = 1000
         # Types of mutations
         self.mutations = {
             't' : self.mutate_t,
@@ -110,7 +107,7 @@ class Exelixi():
         '''
         Give a name to an individual
         '''
-        return random.choice(self.names) + str(individual.fitness)
+        return random.choice(self.names) + str(int(individual.error))
 
 
     def populate(self):
@@ -186,7 +183,7 @@ class Exelixi():
 
         # If there are not enough layers, add some
         if num_layers > len(layers): layers += self.generate_layers(num_layers - len(layers))
-        # For every layer we have, we have a probability of mutation
+        # For every layer we have, we have (up until num_layers) a probability of mutation
         for i in range(num_layers):
             # If we are mutating this layer
             if random.random() < self.layer_mutation:
@@ -246,9 +243,10 @@ class Exelixi():
         A maximum of 5 children are made. If none of them are viable, one of
         the two parents is selected at random.
         '''
-        parent1 = self.select()
-        parent2 = self.select()
-        for i in range(self.natality):
+        viable = False
+        while not viable:
+            parent1 = self.select()
+            parent2 = self.select()
             # Combine parent genomes and mutate
             offspring_genome = self.mutate(self.crossover(parent1, parent2))
             # Try bringing the baby to life
@@ -257,6 +255,7 @@ class Exelixi():
                 # If the fit fails, that means that the baby is an incorrect
                 # configuration
                 offspring.fit(type = self.fitness)
+                viable = True
                 return offspring
             # If the baby isn't viable, try again
             except:
@@ -296,9 +295,10 @@ class Exelixi():
         Runs evolution
         '''
         self.populate()
+        self.report()
         for g in range(self.generations):
-            self.report()
             self.repopulate()
+            self.report()
             self.generation += 1
             # Random Lexicase selection
             self.fitness = random.choice(self.fitness_options)
@@ -306,6 +306,6 @@ class Exelixi():
 
 if __name__ == '__main__':
     'Usage'
-    world = Exelixi(10, 20)
+    world = Exelixi(20, 10)
     fittest = world.aetas()
-    fittest.save()
+    fittest.save(world.name(fittest))
