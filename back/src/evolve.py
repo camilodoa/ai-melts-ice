@@ -318,7 +318,7 @@ class Exelixi():
         '''
         self.populate()
         fittest = self.report()
-        while fittest.fit() > 100:
+        while fittest.fit() > 110:
             self.repopulate()
             fittest = self.report()
             self.generation += 1
@@ -333,6 +333,6 @@ if __name__ == '__main__':
     # fittest = world.aetas()
 
     # Run until we get a good solution
-    world = Exelixi(5)
+    world = Exelixi(10, 50)
     fittest = world.aym()
     fittest.save(world.name(fittest))
