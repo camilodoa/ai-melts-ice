@@ -125,10 +125,11 @@ class Exelixi():
         Make a new generation
         '''
         babies = []
+        fittest = self.fittest()
         for i in range(self.capacity - 1):
             babies.append(self.reproduce())
-        # Keep best individual
-        babies.append(self.fittest())
+        # Keep best individual from last generation
+        babies.append(fittest)
         self.population = babies
 
     def generate_layers(self, num_layers):
@@ -307,7 +308,7 @@ class Exelixi():
         '''
         self.populate()
         self.report()
-        for g in range(self.generations):
+        for g in range(1, self.generations):
             self.repopulate()
             self.report()
             self.generation += 1
@@ -338,6 +339,6 @@ if __name__ == '__main__':
     # fittest = world.aetas()
 
     # Run until we get a good solution
-    world = Exelixi(10, 40)
+    world = Exelixi(10, 20)
     fittest = world.aym()
     fittest.save(world.name(fittest))
