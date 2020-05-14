@@ -328,7 +328,11 @@ class Exelixi():
 
 if __name__ == '__main__':
     'Usage'
-    world = Exelixi(5, 10)
+    # Run for n generations
+    # world = Exelixi(5, 10)
     # fittest = world.aetas()
+
+    # Run until we get a good solution
+    world = Exelixi(5)
     fittest = world.aym()
     fittest.save(world.name(fittest))
