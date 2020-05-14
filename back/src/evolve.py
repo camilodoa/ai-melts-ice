@@ -24,8 +24,8 @@ class Exelixi():
         self.tournament = 3
         # Mutation probabilities
         self.mutation = self.layer_mutation = 0.3
-        self.addition_rate = 0.3
-        self.deletion_rate = 0.3
+        self.addition_rate = 0.2
+        self.deletion_rate = 0.2
         # Layer possibilities
         self.layer_options = {'Dense': Dense, 'LSTM': LSTM, 'SimpleRNN' : SimpleRNN, 'GRU' : GRU}
         self.activation_functions = ['relu', 'tanh', 'sigmoid', 'softmax']
@@ -89,6 +89,9 @@ class Exelixi():
             try:
                 learner.fit(type = self.fitness)
                 viable = True
+            # We're still allowed to cancel the program
+            except KeyboardInterrupt:
+                raise
             except Exception as e:
                 continue
         return learner
@@ -263,6 +266,9 @@ class Exelixi():
                 offspring.fit(type = self.fitness)
                 viable = True
                 return offspring
+            # We're still allowed to cancel the program
+            except KeyboardInterrupt:
+                raise
             # If the baby isn't viable, try again
             except:
                 continue
@@ -289,10 +295,8 @@ class Exelixi():
         Print generation information
         '''
         fittest = self.fittest()
+        print("\nAt generation {0} the best error was {1}.".format(self.generation, fittest.fit(type = self.fitness)))
         fittest.model.summary()
-        print({'generation' : self.generation,
-            'best-error' : fittest.fit(type = self.fitness),
-            'best-genome' : fittest.genome()}, '\n\n')
         return fittest
 
 
@@ -315,10 +319,11 @@ class Exelixi():
         '''
         Cruxis of the algorithm
         Runs evolution until a target error benchmark is reached
+        or until we reach the max number of generations
         '''
         self.populate()
         fittest = self.report()
-        while fittest.fit() > 110:
+        while fittest.fit() > 110 and self.generation <= self.generations:
             self.repopulate()
             fittest = self.report()
             self.generation += 1
@@ -333,6 +338,6 @@ if __name__ == '__main__':
     # fittest = world.aetas()
 
     # Run until we get a good solution
-    world = Exelixi(10, 50)
+    world = Exelixi(10, 40)
     fittest = world.aym()
     fittest.save(world.name(fittest))
