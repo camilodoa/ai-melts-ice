@@ -1,6 +1,6 @@
 import random
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM
+from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU
 from ai import Learner
 
 class Exelixi():
@@ -21,12 +21,13 @@ class Exelixi():
         # Desired population size
         self.capacity = size
         # Tournament size
-        self.tournament = 5
+        self.tournament = 3
         # Mutation probabilities
-        self.mutation = 0.2
-        self.layer_mutation = 0.3
+        self.mutation = self.layer_mutation = 0.3
+        self.addition_rate = 0.3
+        self.deletion_rate = 0.3
         # Layer possibilities
-        self.layer_options = {'Dense': Dense, 'LSTM': LSTM}
+        self.layer_options = {'Dense': Dense, 'LSTM': LSTM, 'SimpleRNN' : SimpleRNN, 'GRU' : GRU}
         self.activation_functions = ['relu', 'tanh', 'sigmoid', 'softmax']
         # Model parameters
         self.optimizer_options = [
@@ -54,7 +55,6 @@ class Exelixi():
             't' : self.mutate_t,
             'split' : self.mutate_split,
             'epochs' : self.mutate_epochs,
-            'num_layers' : self.mutate_num_layers,
             'neurons' : self.mutate_neurons,
             'layers' : self.mutate_layers,
             'optimizer' : self.mutate_optimizer,
@@ -84,8 +84,8 @@ class Exelixi():
             optimizer = random.choice(self.optimizer_options)
             loss = random.choice(self.loss_options)
             learner = Learner(t = t, split = split, epochs = epochs,
-                    num_layers = num_layers, neurons = neurons,
-                    layers = layers, optimizer = optimizer, loss = loss)
+                    neurons = neurons, layers = layers, optimizer = optimizer,
+                    loss = loss)
             try:
                 learner.fit(type = self.fitness)
                 viable = True
@@ -99,9 +99,9 @@ class Exelixi():
         Makes an individual from a genome
         '''
         return Learner(t = genome['t'], split = genome['split'],
-                epochs = genome['epochs'], num_layers = genome['num_layers'],
-                neurons = genome['neurons'], layers = genome['layers'],
-                optimizer = genome['optimizer'], loss = genome['loss'])
+                epochs = genome['epochs'], neurons = genome['neurons'],
+                layers = genome['layers'], optimizer = genome['optimizer'],
+                loss = genome['loss'])
 
     def name(self, individual):
         '''
@@ -130,14 +130,18 @@ class Exelixi():
 
     def generate_layers(self, num_layers):
         '''
-        Make a list of DL layers
+        Make a list random of DL layers
         '''
         layers = []
         for i in range(num_layers):
-            neurons = random.randint(20, 700)
+            neurons = random.randint(20, 1000)
             layer = random.choice(list(self.layer_options.values()))
-            activation = random.choice(self.activation_functions)
-            layers.append(layer(neurons, activation))
+            # If the layer is Dense, we get to pick our own activation function
+            if layer.__class__.__name__ == 'Dense':
+                activation = random.choice(self.activation_functions)
+                layers.append(layer(neurons, activation))
+            # Otherwise, use the default
+            else: layers.append(layer(neurons))
         return layers
 
     '''
@@ -164,13 +168,6 @@ class Exelixi():
         elif new_epochs < self.min_epochs: return self.min_epochs
         else: return new_epochs
 
-    def mutate_num_layers(self, num_layers):
-        change = random.randint(-1, 1)
-        new_num_layers = num_layers + change
-        if new_num_layers > self.max_num_layers: return self.max_num_layers
-        elif new_num_layers < self.min_num_layers: return self.min_num_layers
-        else: return new_num_layers
-
     def mutate_neurons(self, neurons):
         change = random.randint(-100, 100)
         new_neurons = neurons + change
@@ -178,22 +175,29 @@ class Exelixi():
         elif new_neurons < self.min_neurons: return self.min_neurons
         else: return new_neurons
 
-    def mutate_layers(self, layers, num_layers):
+    def mutate_layers(self, layers):
         new_layers = []
+        # UMAD
+        # Addition step
+        for layer in layers:
+            if random.random() < self.addition_rate:
+                new_layer = self.generate_layers(1)[0]
+                if random.random() < 0.5:
+                    # Add new_layer to genome before original layer
+                    new_layers.append(new_layer)
+                    new_layers.append(layer)
+                else:
+                    # Add new_layer to genome after original layer
+                    new_layers.append(layer)
+                    new_layers.append(new_layer)
+            else:
+                # Add regular layer
+                new_layers.append(layer)
 
-        # If there are not enough layers, add some
-        if num_layers > len(layers): layers += self.generate_layers(num_layers - len(layers))
-        # For every layer we have, we have (up until num_layers) a probability of mutation
-        for i in range(num_layers):
-            # If we are mutating this layer
-            if random.random() < self.layer_mutation:
-                # Mutate number of neurons
-                neurons = self.mutate_neurons(layers[i].units)
-                # Randomly pick a layer
-                new_layer = random.choice(list(self.layer_options.values()))
-                # Randomly pick an activation function
-                activation = random.choice(self.activation_functions)
-                new_layers.append(new_layer(neurons, activation))
+        # Deletion step
+        for new_layer in new_layers:
+            if random.random() < self.deletion_rate:
+                new_layers.remove(new_layer)
 
         return new_layers
 
@@ -211,14 +215,16 @@ class Exelixi():
         for name, chromosome in genome.items():
             # If a mutation occurs in this chromosome
             if random.random() <= self.mutation:
-                # If we are mutating the layers, we must take our new num_layers into account
-                if name == 'layers': mutated_chromosome = self.mutations[name](chromosome, mutated_genome.get('num_layers'))
+                # Don't mutate layers yet
+                if name == 'layers': continue
                 # Otherwise, perform appropriate mutation
                 else: mutated_chromosome = self.mutations[name](chromosome)
                 # Update genome
                 mutated_genome.update({name : mutated_chromosome})
             # If no mutation occurs, keep the same chromosome
             else: mutated_genome.update({name : chromosome})
+        # Mutate each layer by the same amount
+        mutated_genome.update({'layers' : self.mutations['layers'](genome.get('layers'))})
         return mutated_genome
 
     def crossover(self, i1, i2):
@@ -287,12 +293,13 @@ class Exelixi():
         print({'generation' : self.generation,
             'best-error' : fittest.fit(type = self.fitness),
             'best-genome' : fittest.genome()}, '\n\n')
+        return fittest
 
 
     def aetas(self):
         '''
         Cruxis of the algorithm
-        Runs evolution
+        Runs evolution for a fixed number of generations
         '''
         self.populate()
         self.report()
@@ -304,8 +311,24 @@ class Exelixi():
             self.fitness = random.choice(self.fitness_options)
         return self.fittest()
 
+    def aym(self):
+        '''
+        Cruxis of the algorithm
+        Runs evolution until a target error benchmark is reached
+        '''
+        self.populate()
+        fittest = self.report()
+        while fittest.fit() > 100:
+            self.repopulate()
+            fittest = self.report()
+            self.generation += 1
+            # Random Lexicase selection
+            self.fitness = random.choice(self.fitness_options)
+        return self.fittest()
+
 if __name__ == '__main__':
     'Usage'
-    world = Exelixi(20, 10)
-    fittest = world.aetas()
+    world = Exelixi(5, 10)
+    # fittest = world.aetas()
+    fittest = world.aym()
     fittest.save(world.name(fittest))

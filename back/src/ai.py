@@ -13,7 +13,7 @@ class Learner():
     Predictor class. Used to build() and fit() a Keras LSTM model to
     make predictions of the future with predict(month, year).
     '''
-    def __init__(self, t = 5, split = 0.70, epochs = 1000, num_layers = 6,
+    def __init__(self, t = 5, split = 0.70, epochs = 1000,
                 neurons = 100,
                 layers = [
                     Dense(200, activation = 'sigmoid'),
@@ -44,7 +44,6 @@ class Learner():
         self.t = t
         # How many epochs to train for
         self.epochs = epochs
-        self.num_layers = num_layers
         self.layers = layers
         self.neurons = neurons
         self.optimizer = 'adam'
@@ -77,8 +76,10 @@ class Learner():
         '''
         Fit the keras self.model
         '''
-        if self.error is not None: return self.error
-        # Build model
+        # If model as already been fit, check that
+        if self.error is not None:
+            self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
+            return self.error
         self.model = self.build()
         self.history = History()
         # Fit model
@@ -138,7 +139,6 @@ class Learner():
             't' : self.t,
             'split' : self.split,
             'epochs' : self.epochs,
-            'num_layers' : self.num_layers,
             'neurons' : self.neurons,
             'layers' : self.layers,
             'optimizer' : self.optimizer,
