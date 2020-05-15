@@ -2,6 +2,13 @@ import random
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU
 from ai import Learner
+from os import listdir
+from os.path import isfile, join
+import re
+from tensorflow.keras.models import load_model
+import pickle
+
+
 
 class Exelixi():
     '''
@@ -113,12 +120,25 @@ class Exelixi():
         return random.choice(self.names) + str(int(individual.error))
 
 
-    def populate(self):
+    def populate(self, use_previous = False):
         '''
         Create initial population
         '''
-        for i in range(self.capacity):
-            self.population.append(self.individual())
+        if use_previous:
+            individuals = './individuals/'
+            onlyfiles = [f for f in listdir(individuals) if isfile(join(individuals, f))]
+            # Reg ex to find all the numbers in the string. Then takes the first one.
+            # This is the previous
+            best_previous = min(onlyfiles, key = lambda x : [[int(s.replace(".", "")) for s in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", 'Licha107.h5')]][0])
+            # Use the last best model trained
+            with open(individuals + best_previous, 'rb') as input:
+                self.population.append(pickle.load(input))
+            # Then generate the rest of the population as normal
+            for i in range(self.capacity - 1):
+                self.population.append(self.individual())
+        else:
+            for i in range(self.capacity):
+                self.population.append(self.individual())
 
     def repopulate(self):
         '''
@@ -300,6 +320,17 @@ class Exelixi():
         fittest.model.summary()
         return fittest
 
+    def save(self):
+        '''
+        Saves fittest to file
+        '''
+        fittest = self.fittest()
+        name = self.name(fittest)
+        fittest.save(name)
+        with open('./individuals/{0}.in'.format(name), 'wb') as output:
+            pickle.dump(fittest, output, -1)
+        return fittest
+
 
     def aetas(self):
         '''
@@ -316,15 +347,15 @@ class Exelixi():
             self.fitness = random.choice(self.fitness_options)
         return self.fittest()
 
-    def aym(self):
+    def aym(self, use_previous = False):
         '''
         Cruxis of the algorithm
         Runs evolution until a target error benchmark is reached
         or until we reach the max number of generations
         '''
-        self.populate()
+        self.populate(use_previous = use_previous)
         fittest = self.report()
-        while fittest.fit() > 110 and self.generation <= self.generations:
+        while fittest.fit() > 100 and self.generation <= self.generations:
             self.repopulate()
             fittest = self.report()
             self.generation += 1
@@ -340,5 +371,5 @@ if __name__ == '__main__':
 
     # Run until we get a good solution
     world = Exelixi(10, 20)
-    fittest = world.aym()
-    fittest.save(world.name(fittest))
+    fittest = world.aym(False)
+    world.save()
