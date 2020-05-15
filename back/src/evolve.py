@@ -6,7 +6,7 @@ from os import listdir
 from os.path import isfile, join
 import re
 from tensorflow.keras.models import load_model
-import dill
+import pickle
 
 
 
@@ -126,13 +126,19 @@ class Exelixi():
         '''
         if use_previous:
             individuals = './individuals/'
-            onlyfiles = [f for f in listdir(individuals) if isfile(join(individuals, f))]
-            # Reg ex to find all the numbers in the string. Then takes the first one.
-            # This is the previous
-            best_previous = min(onlyfiles, key = lambda x : [[int(s.replace(".", "")) for s in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", 'Licha107.h5')]][0])
+            models = './models/'
+            # Finds file name of the previous individual with lowest error
+            previous = min([f for f in listdir(individuals) if isfile(join(individuals, f))], key = lambda x : [[int(s.replace(".", "")) for s in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", x)]][0])
             # Use the last best model trained
-            with open(individuals + best_previous, 'rb') as input:
-                self.population.append(self.animate(dill.load(input)))
+            with open(individuals + previous, 'rb') as input:
+                # Load all of genome from individual except for model layers
+                ancestor = pickle.load(input)
+                # Load model from model folder
+                previous_model = load_model(models + previous[:-7] + '.h5')
+                # Update ancestor with middle layers (All but input/output)
+                ancestor.update({'layers' : previous_model.layers[1:-1]})
+                # Add ancestor to population
+                self.population.append(self.animate(ancestor))
             # Then generate the rest of the population as normal
             for i in range(self.capacity - 1):
                 self.population.append(self.individual())
@@ -328,7 +334,9 @@ class Exelixi():
         name = self.name(fittest)
         fittest.save(name)
         with open('./individuals/{0}.genome'.format(name), 'wb') as output:
-            dill.dump(fittest.genome(), output, -1)
+            genome = fittest.genome()
+            genome.pop('layers') # Remove layers because they can't be serialized
+            pickle.dump(genome, output, -1)
         return fittest
 
     def aetas(self, use_previous = False):
@@ -349,17 +357,11 @@ class Exelixi():
 
 if __name__ == '__main__':
     'Usage'
-    '''
-    # Run for n generations
-    # world = Exelixi(5, 10)
-    # fittest = world.aetas()
-
-    # Run until we get a good solution
+    # Run until we get a good solution or until we reach generation 50s
     world = Exelixi(10, 50)
     fittest = world.aetas(False)
     world.save()
-    '''
 
-    test = Exelixi(1, 20)
-    test.populate()
-    test.save()
+    # test = Exelixi(1, 20)
+    # test.populate()
+    # test.save()
