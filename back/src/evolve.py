@@ -132,7 +132,7 @@ class Exelixi():
             best_previous = min(onlyfiles, key = lambda x : [[int(s.replace(".", "")) for s in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", 'Licha107.h5')]][0])
             # Use the last best model trained
             with open(individuals + best_previous, 'rb') as input:
-                self.population.append(pickle.load(input))
+                self.population.append(self.animate(pickle.load(input)))
             # Then generate the rest of the population as normal
             for i in range(self.capacity - 1):
                 self.population.append(self.individual())
@@ -327,10 +327,9 @@ class Exelixi():
         fittest = self.fittest()
         name = self.name(fittest)
         fittest.save(name)
-        with open('./individuals/{0}.in'.format(name), 'wb') as output:
-            pickle.dump(fittest, output, -1)
+        with open('./individuals/{0}.genome'.format(name), 'wb') as output:
+            pickle.dump(fittest.genome(), output, -1)
         return fittest
-
 
     def aetas(self, use_previous = False):
         '''
@@ -355,6 +354,6 @@ if __name__ == '__main__':
     # fittest = world.aetas()
 
     # Run until we get a good solution
-    world = Exelixi(10, 20)
+    world = Exelixi(10, 50)
     fittest = world.aetas()
     world.save()
