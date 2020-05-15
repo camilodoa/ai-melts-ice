@@ -341,9 +341,9 @@ class Exelixi():
         self.populate(use_previous = use_previous)
         fittest = self.report()
         while fittest.fit() > 110 and self.generation <= self.generations:
+            self.generation += 1
             self.repopulate()
             fittest = self.report()
-            self.generation += 1
             # Random Lexicase selection
             self.fitness = random.choice(self.fitness_options)
         return self.fittest()
