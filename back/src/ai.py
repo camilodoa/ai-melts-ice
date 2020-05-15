@@ -66,7 +66,7 @@ class Learner():
         for layer in self.layers:
             self.model.add(layer)
         # Output layer
-        self.model.add(Dense(self.output_size))
+        self.model.add(Dense(self.output_size, activation = 'relu'))
         # Compile the model
         self.model.compile(optimizer = self.optimizer, loss = self.loss)
         # Get description
@@ -84,7 +84,7 @@ class Learner():
         # If the model has already been built, use that
         if self.model is None:
             self.model = self.build()
-            
+
         self.history = History()
         # Fit model
         self.history = self.model.fit(self.X_train, self.Y_train, epochs = self.epochs, callbacks=[self.history], verbose=self.verbose)
