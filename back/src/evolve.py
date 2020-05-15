@@ -28,7 +28,7 @@ class Exelixi():
         # Desired population size
         self.capacity = size
         # Tournament size
-        self.tournament = 3
+        self.tournament = 5
         # Mutation probabilities
         self.mutation = self.layer_mutation = 0.3
         self.addition_rate = 0.2
@@ -358,7 +358,7 @@ class Exelixi():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = Exelixi(10, 50)
+    world = Exelixi(15, 40)
     fittest = world.aetas(False)
     world.save()
 
