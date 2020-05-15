@@ -332,22 +332,7 @@ class Exelixi():
         return fittest
 
 
-    def aetas(self):
-        '''
-        Cruxis of the algorithm
-        Runs evolution for a fixed number of generations
-        '''
-        self.populate()
-        self.report()
-        for g in range(1, self.generations):
-            self.repopulate()
-            self.report()
-            self.generation += 1
-            # Random Lexicase selection
-            self.fitness = random.choice(self.fitness_options)
-        return self.fittest()
-
-    def aym(self, use_previous = False):
+    def aetas(self, use_previous = False):
         '''
         Cruxis of the algorithm
         Runs evolution until a target error benchmark is reached
@@ -355,7 +340,7 @@ class Exelixi():
         '''
         self.populate(use_previous = use_previous)
         fittest = self.report()
-        while fittest.fit() > 100 and self.generation <= self.generations:
+        while fittest.fit() > 110 and self.generation <= self.generations:
             self.repopulate()
             fittest = self.report()
             self.generation += 1
@@ -371,5 +356,5 @@ if __name__ == '__main__':
 
     # Run until we get a good solution
     world = Exelixi(10, 20)
-    fittest = world.aym(False)
+    fittest = world.aetas()
     world.save()
