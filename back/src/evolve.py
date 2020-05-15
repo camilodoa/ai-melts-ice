@@ -6,7 +6,7 @@ from os import listdir
 from os.path import isfile, join
 import re
 from tensorflow.keras.models import load_model
-import pickle
+import dill
 
 
 
@@ -132,7 +132,7 @@ class Exelixi():
             best_previous = min(onlyfiles, key = lambda x : [[int(s.replace(".", "")) for s in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", 'Licha107.h5')]][0])
             # Use the last best model trained
             with open(individuals + best_previous, 'rb') as input:
-                self.population.append(self.animate(pickle.load(input)))
+                self.population.append(self.animate(dill.load(input)))
             # Then generate the rest of the population as normal
             for i in range(self.capacity - 1):
                 self.population.append(self.individual())
@@ -328,7 +328,7 @@ class Exelixi():
         name = self.name(fittest)
         fittest.save(name)
         with open('./individuals/{0}.genome'.format(name), 'wb') as output:
-            pickle.dump(fittest.genome(), output, -1)
+            dill.dump(fittest.genome(), output, -1)
         return fittest
 
     def aetas(self, use_previous = False):
@@ -355,5 +355,5 @@ if __name__ == '__main__':
 
     # Run until we get a good solution
     world = Exelixi(10, 50)
-    fittest = world.aetas()
+    fittest = world.aetas(False)
     world.save()
