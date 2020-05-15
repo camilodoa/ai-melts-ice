@@ -17,6 +17,6 @@ please note that this was all written in python3
 
 `ai.py` builds an LSTM model based on the dataset generated with `datasetgenerator.py`. It uses the model and dataset to predict future arrests and saves them in `predictions.csv`
 
-`evolve.py` leverages evolution to find the optimal model for our time series predictions
+`evolve.py` leverages evolution to find the optimal model for our time series predictions by evaluating a population of models with their testing accuracy
 
 `main.py` starts a RESTful API that serves the data in `predictions.csv`
