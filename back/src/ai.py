@@ -50,7 +50,6 @@ class Learner():
         self.loss = 'mse'
         self.error = None
         self.verbose = verbose
-        self.model = None
 
     def build(self):
         '''
@@ -81,9 +80,8 @@ class Learner():
         if self.error is not None:
             self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
             return self.error
-        # If the model has already been built, use that
-        if self.model is None:
-            self.model = self.build()
+
+        self.model = self.build()
 
         self.history = History()
         # Fit model
