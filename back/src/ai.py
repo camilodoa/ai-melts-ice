@@ -1,14 +1,14 @@
-from datasetgenerator import Generator
-from dateutil import relativedelta
-import os.path
-import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import History
+from datasetgenerator import Generator
+from dateutil import relativedelta
+import os.path
+import pandas as pd
 
-class Learner():
+class Model():
     '''
     Predictor class. Used to build() and fit() a Keras LSTM model to
     make predictions of the future with predict(month, year).
@@ -65,7 +65,7 @@ class Learner():
         for layer in self.layers:
             self.model.add(layer)
         # Output layer
-        self.model.add(Dense(self.output_size, activation = 'relu'))
+        self.model.add(Dense(self.output_size))
         # Compile the model
         self.model.compile(optimizer = self.optimizer, loss = self.loss)
         # Get description
@@ -77,16 +77,11 @@ class Learner():
         Fit the keras self.model
         '''
         # If model as already been fit, check that
-        if self.error is not None:
-            self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
-            return self.error
-
+        if self.error is not None: return self.error
         self.model = self.build()
-
         self.history = History()
-        # Fit model
         self.history = self.model.fit(self.X_train, self.Y_train, epochs = self.epochs, callbacks=[self.history], verbose=self.verbose)
-        # assign fitness
+        # Assign fitness
         self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
         return self.error
 
@@ -137,18 +132,12 @@ class Learner():
         return predictions
 
     def genome(self):
-        return {
-            't' : self.t,
-            'split' : self.split,
-            'epochs' : self.epochs,
-            'neurons' : self.neurons,
-            'layers' : self.layers,
-            'optimizer' : self.optimizer,
-            'loss' : self.loss
-        }
+        return { 't' : self.t, 'split' : self.split, 'epochs' : self.epochs,
+            'neurons' : self.neurons, 'layers' : self.layers,
+            'optimizer' : self.optimizer,'loss' : self.loss}
 
 if __name__ == '__main__':
     'Usage'
-    primis = Learner(verbose=1)
+    primis = Model(verbose=1)
     primis.fit()
     # a.predict_forward(12, 2021)
