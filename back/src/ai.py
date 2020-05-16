@@ -10,8 +10,12 @@ import pandas as pd
 
 class Model():
     '''
-    Predictor class. Used to build() and fit() a Keras LSTM model to
+    Model class. Used to build() and fit() a Keras LSTM model to
     make predictions of the future with predict(month, year).
+    Serialized with genome.
+    Takes in customizable arguments of serialization.
+    Also takes in the path to a time-series Pandas dataset, with an attribute
+    labeled "Date".
     '''
     def __init__(self, t = 5, split = 0.70, epochs = 1000,
                 neurons = 100,
@@ -20,14 +24,14 @@ class Model():
                     Dense(300, activation = 'relu'),
                     Dense(500, activation = 'sigmoid'),
                     LSTM(150, activation = 'relu')
-                ], optimizer = 'adam', loss = 'mse', verbose = 0):
+                ], optimizer = 'adam', loss = 'mse', verbose = 0, dataset='data.csv'):
         '''
         Initialize class variables for network training
         '''
         # Initialize dataset generator class
         g = Generator()
         # Read in dataset into pandas DataFrame object
-        df = pd.read_csv('data.csv', infer_datetime_format = True, parse_dates = ['Date'])
+        df = pd.read_csv(dataset, infer_datetime_format = True, parse_dates = ['Date'])
         # Sort values by date (earliest dates first)
         df = df.sort_values('Date').drop(['Date'], axis = 1)
         # Split into test and training
@@ -85,12 +89,18 @@ class Model():
         self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
         return self.error
 
-    def save(self, name):
+    def save(self, name = 'model'):
         '''
-        Save self.model
+        Save self.model and genome serialization
         '''
         self.model.save('models/{0}.h5'.format(name))
         print('Saved model to models/{0}.h5'.format(name))
+
+        with open('individuals/{0}.genome'.format(name), 'wb') as output:
+            genome = self.get_genome()
+            genome.pop('layers') # Remove layers because they can't be serialized
+            pickle.dump(genome, output, -1)
+            print("Saved individual to individuals/{0}.genome".format(name))
         return self.model
 
     def predict_forward(self, month, year):
@@ -101,7 +111,7 @@ class Model():
         if os.path.isfile('model.h5'): self.model = load_model('model.h5')
         else: self.model = self.fit()
         # Load dataset
-        df = pd.read_csv('data.csv', infer_datetime_format=True, parse_dates=['Date'])
+        df = pd.read_csv(dataset, infer_datetime_format=True, parse_dates=['Date'])
         # Extract last recorded date
         date = pd.to_datetime(df['Date'].values[-1])
         # If the date predicted is in or before our dataset, do nothing
@@ -131,7 +141,7 @@ class Model():
         df.to_csv('predictions.csv', index = False)
         return predictions
 
-    def genome(self):
+    def get_genome(self):
         return { 't' : self.t, 'split' : self.split, 'epochs' : self.epochs,
             'neurons' : self.neurons, 'layers' : self.layers,
             'optimizer' : self.optimizer,'loss' : self.loss}

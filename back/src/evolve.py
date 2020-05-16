@@ -10,19 +10,23 @@ from os.path import isfile, join
 
 class AutomaticModelEvolution():
     '''
-    Evolutionary search for finding optimal DL model for ICE raid predictions
+    Automatic Model Evolution (AME):
+    Evolutionary search for finding optimal DL model for ICE raids by county
     '''
     # Constructor ##############################################################
-    def __init__(self, size = 10, generations = 50, ancestor = False):
+    def __init__(self, size = 10, generations = 50, ancestor = False, target = 110):
         '''
         Constructor
         Arguments:
             size: number of individuals
             generations: number of iterations to run
-            ancestor: whether
+            ancestor: whether to add previous minima to population
+            target: target error on testing
         Initializes field variables
         '''
         # Population attributes
+        # Target error
+        self.target = target
         # Number of generations that will be produced
         self.generations = generations
         # Current generation
@@ -141,7 +145,7 @@ class AutomaticModelEvolution():
         '''
         new_genome = {}
         for gene in i1_genome.keys():
-            new_genome.update({gene : random.choice([i1.genome()[gene], i2.genome()[gene]])})
+            new_genome.update({gene : random.choice([i1.get_genome()[gene], i2.get_genome()[gene]])})
         return new_genome
 
     def reproduce(self):
@@ -328,13 +332,8 @@ class AutomaticModelEvolution():
         Saves fittest to file
         '''
         fittest = self.fittest()
-        name = self.name(fittest)
-        fittest.save(name)
-        with open('./individuals/{0}.genome'.format(name), 'wb') as output:
-            genome = fittest.genome()
-            genome.pop('layers') # Remove layers because they can't be serialized
-            pickle.dump(genome, output, -1)
-        print("Saved individual to individuals/{0}.genome".format(name))
+        fittest.save(self.name(fittest))
+
         return fittest
 
     # Main #####################################################################
@@ -347,7 +346,7 @@ class AutomaticModelEvolution():
         print("Starting evolution", "from scratch" if not self.ancestor else "")
         self.populate()
         fittest = self.report()
-        while fittest.fit() > 110 and self.generation <= self.generations:
+        while fittest.fit() > self.target and self.generation <= self.generations:
             self.generation += 1
             print('Repopulating {0} individuals'.format(self.capacity))
             self.repopulate()
@@ -357,6 +356,6 @@ class AutomaticModelEvolution():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(15, 50)
+    world = AutomaticModelEvolution(15, 50, 110)
     fittest = world.run()
     world.save()
