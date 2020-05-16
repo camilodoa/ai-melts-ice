@@ -7,6 +7,7 @@ import pickle
 import random
 from os import listdir
 from os.path import isfile, join
+from progress.bar import Bar
 
 class AutomaticModelEvolution():
     '''
@@ -46,9 +47,9 @@ class AutomaticModelEvolution():
         self.ancestor = ancestor
         # Genome attributes
         # Mutation probabilities
-        self.mutation = self.layer_mutation = 0.3
-        self.addition_rate = 0.2
-        self.deletion_rate = 0.2
+        self.mutation = self.layer_mutation = 0.2
+        self.addition_rate = 0.15
+        self.deletion_rate = 0.15
         # Layer possibilities
         self.layer_options = {'Dense': Dense, 'LSTM': LSTM,
             'SimpleRNN' : SimpleRNN, 'GRU' : GRU}
@@ -160,7 +161,6 @@ class AutomaticModelEvolution():
         self.natality children are made, and the best of them survives for
         the next generation
         '''
-        print('Reproducing')
         children = []
         for _ in range(self.natality):
             viable = False
@@ -296,31 +296,56 @@ class AutomaticModelEvolution():
         '''
         Create initial population
         '''
-        print('Initializing population')
+        bar = Bar('Initializing population', max=self.capacity)
         # Add best previously found individual
         if self.ancestor:
             # Add ancestor to population
             self.population.append(self.animate(self.get_ancestor()))
-            # Then generate the rest of the population as normal
-            for i in range(self.capacity - 1):
-                self.population.append(self.individual())
+            bar.next()
+            # Rest of the population are working mutations of the ancestor
+            for _ in range(self.capacity - 1):
+                viable = False
+                while not viable:
+                    try:
+                        # Initialize by mutating ancestor
+                        descendant = self.animate(self.mutate(self.get_ancestor()))
+                        # If the fit fails, that means that the descendant is an incorrect
+                        # configuration
+                        descendant.fit(type = self.fitness)
+                        viable = True
+                        self.population.append(descendant)
+                    # We're still allowed to cancel the program
+                    except KeyboardInterrupt:
+                        raise
+                    # If the baby isn't viable, try again
+                    except Exception as e:
+                        if self.verbose: print("In reproduce", e)
+                        continue
+                bar.next()
+            bar.finish()
+
         # Initialize as normal
         else:
-            for i in range(self.capacity):
+            for _ in range(self.capacity):
                 self.population.append(self.individual())
+                bar.next()
+            bar.finish()
         return self.population
 
     def repopulate(self):
         '''
         Make a new generation
         '''
-        print('Creating generation {0}'.format(self.generation))
         babies = []
+        bar = Bar('Creating generation {0}'.format(self.generation), max = self.capacity)
         fittest = self.fittest()
         # Keep best individual from last generation
         babies.append(fittest)
+        bar.next()
         for i in range(self.capacity - 1):
             babies.append(self.reproduce())
+            bar.next()
+        bar.finish()
         self.population = babies
 
     # I/O ######################################################################
@@ -349,7 +374,7 @@ class AutomaticModelEvolution():
         Runs evolution until a target error benchmark is reached
         or until we reach the max number of generations
         '''
-        print("Starting evolution", "from scratch" if not self.ancestor else "")
+        print("Starting evolution", "from scratch" if not self.ancestor else "with ancestor")
         self.populate()
         fittest = self.report()
         while fittest.fit() > self.target and self.generation <= self.generations:
@@ -362,6 +387,7 @@ class AutomaticModelEvolution():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(5, 20, False, 110)
-    fittest = world.run()
+    world = AutomaticModelEvolution(size = 6, generations = 20, ancestor = True,
+        target = 100)
+    world.run()
     world.save()
