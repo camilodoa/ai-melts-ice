@@ -47,7 +47,7 @@ class AutomaticModelEvolution():
         self.ancestor = ancestor
         # Genome attributes
         # Mutation probabilities
-        self.mutation = self.layer_mutation = 0.2
+        self.mutation = 0.2
         self.addition_rate = 0.15
         self.deletion_rate = 0.15
         # Layer possibilities
