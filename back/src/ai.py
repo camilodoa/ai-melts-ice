@@ -101,7 +101,7 @@ class Model():
             genome = self.get_genome()
             genome.pop('layers') # Remove layers because they can't be serialized
             pickle.dump(genome, output, -1)
-            print("Saved individual to individuals/{0}.genome".format(name))
+            print('Saved individual to individuals/{0}.genome'.format(name))
         return self.model
 
     def predict_forward(self, month, year):

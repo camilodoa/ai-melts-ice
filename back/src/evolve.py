@@ -354,9 +354,10 @@ class AutomaticModelEvolution():
         Print generation information
         '''
         fittest = self.fittest()
-        print("\nAt generation {0} the best error was {1}".format(self.generation,
+        print("At generation {0} the best error was {1}".format(self.generation,
             fittest.fit(type = self.fitness)))
         fittest.model.summary()
+        print('\n')
         return fittest
 
     def save(self):
@@ -386,7 +387,7 @@ class AutomaticModelEvolution():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(size = 6, generations = 20, ancestor = True,
+    world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
         target = 100)
     world.run()
     world.save()
