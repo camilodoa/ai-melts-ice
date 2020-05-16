@@ -340,7 +340,6 @@ class AutomaticModelEvolution():
         '''
         fittest = self.fittest()
         fittest.save(self.name(fittest))
-
         return fittest
 
     # Main #####################################################################
@@ -363,6 +362,6 @@ class AutomaticModelEvolution():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(15, 50, False, 110)
+    world = AutomaticModelEvolution(5, 20, False, 110)
     fittest = world.run()
     world.save()

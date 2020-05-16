@@ -7,6 +7,7 @@ from datasetgenerator import Generator
 from dateutil import relativedelta
 import os.path
 import pandas as pd
+import pickle
 
 class Model():
     '''
