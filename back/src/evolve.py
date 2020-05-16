@@ -290,6 +290,7 @@ class AutomaticModelEvolution():
         '''
         Create initial population
         '''
+        print('Initializing population')
         # Add best previously found individual
         if self.ancestor:
             # Add ancestor to population
@@ -356,6 +357,6 @@ class AutomaticModelEvolution():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(15, 50, 110)
+    world = AutomaticModelEvolution(15, 50, False, 110)
     fittest = world.run()
     world.save()
