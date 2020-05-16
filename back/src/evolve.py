@@ -14,7 +14,8 @@ class AutomaticModelEvolution():
     Evolutionary search for finding optimal DL model for ICE raids by county
     '''
     # Constructor ##############################################################
-    def __init__(self, size = 10, generations = 50, ancestor = False, target = 110):
+    def __init__(self, size = 10, generations = 50, ancestor = False,
+        target = 110, verbose = 0):
         '''
         Constructor
         Arguments:
@@ -25,6 +26,8 @@ class AutomaticModelEvolution():
         Initializes field variables
         '''
         # Population attributes
+        # Whether to print out information to terminal
+        self.verbose = verbose
         # Target error
         self.target = target
         # Number of generations that will be produced
@@ -93,13 +96,15 @@ class AutomaticModelEvolution():
                 neurons = random.randint(self.min_neurons, self.max_neurons),
                 layers = self.generate_layers(random.randint(self.min_num_layers, self.max_num_layers)),
                 optimizer = random.choice(self.optimizer_options),
-                loss = random.choice(self.loss_options))
+                loss = random.choice(self.loss_options),
+                verbose = self.verbose)
             try:
                 learner.fit(type = self.fitness)
                 viable = True
             except KeyboardInterrupt:
                 raise
             except Exception as e:
+                if self.verbose: print("In individual", e)
                 continue
         return learner
 
@@ -110,7 +115,7 @@ class AutomaticModelEvolution():
         return Model(t = genome['t'], split = genome['split'],
                 epochs = genome['epochs'], neurons = genome['neurons'],
                 layers = genome['layers'], optimizer = genome['optimizer'],
-                loss = genome['loss'])
+                loss = genome['loss'], verbose = self.verbose)
 
     def name(self, individual):
         '''
@@ -144,7 +149,7 @@ class AutomaticModelEvolution():
         Randomly crossover two individuals' genomes
         '''
         new_genome = {}
-        for gene in i1_genome.keys():
+        for gene in i1.get_genome().keys():
             new_genome.update({gene : random.choice([i1.get_genome()[gene], i2.get_genome()[gene]])})
         return new_genome
 
@@ -174,7 +179,8 @@ class AutomaticModelEvolution():
                 except KeyboardInterrupt:
                     raise
                 # If the baby isn't viable, try again
-                except:
+                except Exception as e:
+                    if self.verbose: print("In reproduce", e)
                     continue
         # Return the offspring with the smallest error
         return min(children, key = lambda child : child.fit(type = self.fitness))
