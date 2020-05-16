@@ -28,7 +28,7 @@ class Exelixi():
         # Desired population size
         self.capacity = size
         # Tournament size
-        self.tournament = 5
+        self.tournament = 3
         # Mutation probabilities
         self.mutation = self.layer_mutation = 0.3
         self.addition_rate = 0.2
@@ -124,6 +124,7 @@ class Exelixi():
         '''
         Create initial population
         '''
+        # Add best previously found individual
         if use_previous:
             individuals = './individuals/'
             models = './models/'
@@ -142,6 +143,7 @@ class Exelixi():
             # Then generate the rest of the population as normal
             for i in range(self.capacity - 1):
                 self.population.append(self.individual())
+        # Initialize as normal
         else:
             for i in range(self.capacity):
                 self.population.append(self.individual())
@@ -152,10 +154,10 @@ class Exelixi():
         '''
         babies = []
         fittest = self.fittest()
-        for i in range(self.capacity - 1):
-            babies.append(self.reproduce())
         # Keep best individual from last generation
         babies.append(fittest)
+        for i in range(self.capacity - 1):
+            babies.append(self.reproduce())
         self.population = babies
 
     def generate_layers(self, num_layers):
@@ -244,7 +246,7 @@ class Exelixi():
         mutated_genome = {}
         for name, chromosome in genome.items():
             # If a mutation occurs in this chromosome
-            if random.random() <= self.mutation:
+            if random.random() < self.mutation:
                 # Don't mutate layers yet
                 if name == 'layers': continue
                 # Otherwise, perform appropriate mutation
@@ -358,8 +360,8 @@ class Exelixi():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = Exelixi(15, 40)
-    fittest = world.aetas(False)
+    world = Exelixi(5, 20)
+    fittest = world.aetas()
     world.save()
 
     # test = Exelixi(1, 20)
