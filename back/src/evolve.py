@@ -379,7 +379,6 @@ class AutomaticModelEvolution():
         fittest = self.report()
         while fittest.fit() > self.target and self.generation <= self.generations:
             self.generation += 1
-            print('Repopulating {0} individuals'.format(self.capacity))
             self.repopulate()
             fittest = self.report()
         return self.fittest()
