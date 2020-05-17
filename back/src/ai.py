@@ -31,13 +31,14 @@ class Model():
         '''
         # Initialize dataset generator class
         g = Generator()
+        self.dataset = dataset
         # Read in dataset into pandas DataFrame object
         df = pd.read_csv(dataset, infer_datetime_format = True, parse_dates = ['Date'])
         # Sort values by date (earliest dates first)
         df = df.sort_values('Date').drop(['Date'], axis = 1)
         # Split into test and training
         self.split = split
-        # Split remains the same among all Ai instances
+        # Split
         train, test = df.iloc[0:int(len(df) * self.split)], df.iloc[int(len(df) * self.split):len(df)]
         # Split dataset into X Y pairs
         self.X_train, self.Y_train = g.split(train, t)
@@ -51,8 +52,8 @@ class Model():
         self.epochs = epochs
         self.layers = layers
         self.neurons = neurons
-        self.optimizer = 'adam'
-        self.loss = 'mse'
+        self.optimizer = optimizer
+        self.loss = loss
         self.error = None
         self.verbose = verbose
 
@@ -109,10 +110,9 @@ class Model():
         Generate predictions until month year (greater than 2014) and write them to
         predictions.csv
         '''
-        if os.path.isfile('model.h5'): self.model = load_model('model.h5')
-        else: self.model = self.fit()
+        if self.error is None: self.fit()
         # Load dataset
-        df = pd.read_csv(dataset, infer_datetime_format=True, parse_dates=['Date'])
+        df = pd.read_csv(self.dataset, infer_datetime_format = True, parse_dates = ['Date']).sort_values('Date')
         # Extract last recorded date
         date = pd.to_datetime(df['Date'].values[-1])
         # If the date predicted is in or before our dataset, do nothing
@@ -120,16 +120,17 @@ class Model():
         # Calculate difference between last date in dataset and the date given
         diff = (year - date.year) * 12 + month - date.month
         # Drop dates, they are not a part of the input of our NN self.model
-        df.drop(['Date'], axis = 1)
         # Generate predictions for each month in difference
         g = Generator()
         for i in range(diff):
-            # Convert last 12 months into data
-            data = g.convert(df, self.t, -self.t, 0)
+            print(i)
+            # Convert last t months into data
+            data = g.convert(df.drop(['Date'], axis = 1), self.t, -self.t, 0)
             # Use data to predict with the self.model
             predictions = self.model.predict(data)
+            print(predictions)
             # Update current  date
-            date = date + relativedelta(months = 1)
+            date = date + relativedelta.relativedelta(months = 1)
             # Only keep integer predictions - negative predictions are set to 0
             predictions = {city : int(round(max(prediction, 0))) for city, prediction in zip(df.columns, predictions[0])}
             # Append prediction to the predictions dataset (without date column)
