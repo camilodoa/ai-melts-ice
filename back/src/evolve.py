@@ -384,15 +384,18 @@ class AutomaticModelEvolution():
             fittest = self.report()
         return self.fittest()
 
+    def predict(self, month, year):
+        '''
+        Generate time series data up until month/year
+        '''
+        ancestor = self.animate(self.get_ancestor())
+        ancestor.predict_forward(month, year)
+
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    # world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
-    #     target = 100)
-    # world.run()
-    # world.save()
-
     world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
         target = 100)
-    ancestor = world.animate(world.get_ancestor())
-    ancestor.predict_forward(12, 2022)
+    # world.run()
+    # world.save()
+    world.predict(12, 2022)

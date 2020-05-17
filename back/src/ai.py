@@ -121,14 +121,16 @@ class Model():
         diff = (year - date.year) * 12 + month - date.month
         # Drop dates, they are not a part of the input of our NN self.model
         # Generate predictions for each month in difference
+        # Final dataset with dates
+        final = df.copy()
+        # Prediction dataset with no date attribute
+        df = df.drop(['Date'], axis = 1)
         g = Generator()
         for i in range(diff):
-            print(i)
             # Convert last t months into data
-            data = g.convert(df.drop(['Date'], axis = 1), self.t, -self.t, 0)
+            data = g.convert(df, self.t, -self.t, 0)
             # Use data to predict with the self.model
             predictions = self.model.predict(data)
-            print(predictions)
             # Update current  date
             date = date + relativedelta.relativedelta(months = 1)
             # Only keep integer predictions - negative predictions are set to 0
@@ -138,9 +140,9 @@ class Model():
             # Add date field to the prediction dictionary
             predictions.update({'Date' : date})
             # Append prediction dictionary with date to final DataFrame
-            df = df.append(predictions, ignore_index = True)
+            final = final.append(predictions, ignore_index = True)
         # Save data frame
-        df.to_csv('predictions.csv', index = False)
+        final.to_csv('predictions.csv', index = False)
         return predictions
 
     def get_genome(self):
