@@ -65,8 +65,8 @@ class AutomaticModelEvolution():
         self.max_t = 12
         self.min_split = 0.5
         self.max_split = 0.8
-        self.min_epochs = 100
-        self.max_epochs = 1000
+        self.min_epochs = 32
+        self.max_epochs = 600
         self.min_num_layers = 0
         self.max_num_layers = 15
         self.min_neurons = 32
@@ -356,7 +356,7 @@ class AutomaticModelEvolution():
         fittest = self.fittest()
         print("At generation {0} the best error was {1}".format(self.generation,
             fittest.fit(type = self.fitness)))
-        fittest.model.summary()
+        if self.verbose: fittest.model.summary()
         print('\n')
         return fittest
 

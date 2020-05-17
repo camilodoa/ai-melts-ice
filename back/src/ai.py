@@ -70,7 +70,7 @@ class Model():
         for layer in self.layers:
             self.model.add(layer)
         # Output layer
-        self.model.add(Dense(self.output_size))
+        self.model.add(Dense(self.output_size, activation = 'relu'))
         # Compile the model
         self.model.compile(optimizer = self.optimizer, loss = self.loss)
         # Get description
