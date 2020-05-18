@@ -87,7 +87,7 @@ export default function County() {
         <header className='body'>
           <img src={logo} className='logo' alt='logo'/>
           <p>
-            ai.melts.ice
+            AI Melts ICE
           </p>
           <Spinner animation="border" variant="dark" role="status"/>
         </header>

@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
 import api from '../rest';
 import useWindowSize from '../hooks/window';
+import logo from '../images/logo512.png';
 
 
 mapboxgl.accessToken = token.mapBoxToken;
@@ -276,6 +277,7 @@ export default function Home() {
         settoday={settoday}/>
         {datedata === null ?
           <header className='body'>
+            <img src={logo} className='logo' alt='logo'/>
             <p>
               AI Melts ICE
             </p>
