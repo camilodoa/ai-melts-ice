@@ -57,16 +57,15 @@ class AutomaticModelEvolution():
         # Model parameters
         self.optimizer_options = ['Adam', 'SGD', 'RMSprop', 'Adadelta',
             'Adagrad', 'Adamax', 'Nadam', 'Ftrl']
-        self.loss_options = ['mse', 'mae', 'mape', 'cosine_loss',
-            'huber', 'log_cosh']
+        self.loss_options = ['mse']
         self.fitness = 'evaluation'
         # DNA constraints
-        self.min_t = 1
+        self.min_t = 6
         self.max_t = 12
-        self.min_split = 0.5
+        self.min_split = 0.7
         self.max_split = 0.8
-        self.min_epochs = 32
-        self.max_epochs = 600
+        self.min_epochs = 100
+        self.max_epochs = 1500
         self.min_num_layers = 0
         self.max_num_layers = 15
         self.min_neurons = 32
@@ -284,6 +283,7 @@ class AutomaticModelEvolution():
             key = lambda x : [int(s.replace(".", "")) for s in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", x)][0])
         # Use the last best model trained
         with open(individuals + previous, 'rb') as input:
+            if self.verbose: print("Loading", individuals + previous)
             # Load all of genome from individual except for model layers
             ancestor = pickle.load(input)
             # Load model from model folder
@@ -296,7 +296,7 @@ class AutomaticModelEvolution():
         '''
         Create initial population
         '''
-        bar = Bar('Initializing population', max=self.capacity)
+        bar = Bar('Initializing population',  fill='=', max=self.capacity)
         # Add best previously found individual
         if self.ancestor:
             # Add ancestor to population
@@ -337,7 +337,7 @@ class AutomaticModelEvolution():
         Make a new generation
         '''
         babies = []
-        bar = Bar('Creating generation {0}'.format(self.generation), max = self.capacity)
+        bar = Bar('Creating generation {0}'.format(self.generation), fill='=', max = self.capacity)
         fittest = self.fittest()
         # Keep best individual from last generation
         babies.append(fittest)
@@ -393,17 +393,9 @@ class AutomaticModelEvolution():
 
 if __name__ == '__main__':
     'Usage'
-<<<<<<< HEAD
-    # Run until we get a good solution or until we reach generation 50s
-    # world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
-    #     target = 100)
-=======
     # Run until we get a good solution or until we reach generation 15
     # Or get an error on testing that is less than 1
     world = AutomaticModelEvolution(size = 10, generations = 15, ancestor = False,
-        target = 1)
-    print(world.get_ancestor())
->>>>>>> c4ed783e4120dbadcc9095c6ae678da58831e390
-    # world.run()
-    # world.save()
-    # world.predict(12, 2022)
+        target = 1, verbose=0)
+    world.run()
+    world.save()

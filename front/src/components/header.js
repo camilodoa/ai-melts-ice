@@ -16,22 +16,35 @@ function Header({
                     mindate, maxdate, fetchdatedata, settoday, location,
                     counties, fetchcountydata, sethere
                 }) {
+
+    const [expanded, setExpanded] = useState(false);
+
     return (
-        <Navbar bg='light' expand='lg' sticky='top'>
+        <Navbar bg='light' expand='lg' sticky='top' onToggle={setExpanded} expanded={expanded}>
             <Navbar.Brand href='/'>
                 <img src={logo} className="d-inline-block align-top" height="30" width="30" alt="logo"/>
                 {' '}
                 AI Melts ICE
             </Navbar.Brand>
             <Nav className='ml-sm-auto ml-xs-0 my-2'>
-              {location.pathname === '/' ?
-                  <DateForm
-                      maxdate={maxdate}
-                      mindate={mindate}
-                      fetchdatedata={fetchdatedata}
-                      settoday={settoday}/>
-                  :
-                  null}
+                {location.pathname === '/' ?
+                    <DateForm
+                        maxdate={maxdate}
+                        mindate={mindate}
+                        fetchdatedata={fetchdatedata}
+                        settoday={settoday}
+                        setexpanded={setExpanded}/>
+                    :
+                    null}
+
+                {location.pathname === '/county' ?
+                    <CountyForm
+                        counties={counties}
+                        fetchcountydata={fetchcountydata}
+                        sethere={sethere}
+                        setexpanded={setExpanded}/>
+                    :
+                    null}
             </Nav>
             <Nav className='ml-sm-auto ml-xs-0'>
                 <Nav.Link href='/about'>
@@ -42,7 +55,7 @@ function Header({
     );
 }
 
-function DateForm({mindate, maxdate, fetchdatedata, settoday}) {
+function DateForm({mindate, maxdate, fetchdatedata, settoday, setexpanded}) {
 
     const [date, setdate] = useState(new Date());
 
@@ -68,5 +81,76 @@ function DateForm({mindate, maxdate, fetchdatedata, settoday}) {
     );
 }
 
+function CountyForm({counties, fetchcountydata, sethere, setexpanded}) {
+
+    const [county, setcounty] = useState(counties.counties[0]);
+
+    return (
+        <div>
+            <Form
+                inline
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    fetchcountydata(county);
+                    sethere(county);
+                }}>
+                <Form.Row>
+                    <Col xs>
+                        <Form.Control
+                            className="mr-sm-2"
+                            as="select"
+                            value={county}
+                            onChange={(e) => setcounty(e.target.value)}>
+                            {
+                                counties.counties.map((county, index) =>
+                                    <option key={'county' + index}>{county}</option>
+                                )
+                            }
+                        </Form.Control>
+                    </Col>
+                    <Col>
+                        <LoadingButton
+                            variable={county}
+                            fetch={fetchcountydata}
+                            setvariable={sethere}
+                            setexpanded={setexpanded}/>
+                    </Col>
+                </Form.Row>
+            </Form>
+        </div>
+    );
+}
+
+function LoadingButton({fetch, variable, setvariable, setexpanded}) {
+
+    const [isLoading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isLoading) {
+            fetch(variable).then(r => {
+                setLoading(false);
+            });
+            setvariable(variable);
+            setexpanded(false);
+        }
+    }, [isLoading, variable]);
+
+    const handleClick = () => setLoading(true);
+
+    return (
+        <Button
+            variant='outline-primary'
+            className='mr-1 mx-0 non-resizing'
+            type='submit'
+            disabled={isLoading}
+            onClick={!isLoading ? handleClick : null}
+        >
+            {isLoading ?
+                <Spinner as='span' role='status' animation='border' variant='primary' size='sm'/>
+                :
+                <FaSistrix/>}
+        </Button>
+    );
+}
 
 export default withRouter(Header);
