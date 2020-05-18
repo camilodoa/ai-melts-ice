@@ -103,10 +103,26 @@ class Generator():
             print(i, {county : [location.longitude, location.latitude]})
             # Don't spam their servers too much
             time.sleep(1)
-        pickle.dump(mapping,open( "county_to_coordinate.p", "wb" ))
+        return self.save_mapping(mapping)
+
+    def save_mapping(self, mapping):
+        pickle.dump(mapping,open( "coordinates.dict", "wb" ))
         return mapping
+
+    def load_mapping(self):
+        return pickle.load(open("coordinates.dict","rb"))
+
 
 if __name__ == '__main__':
     'Usage'
     g = Generator()
-    g.initialize()
+
+    # g.initialize()
+    # mapping = g.load_mapping()
+    # print(mapping['San Juan, PR'])
+    # mapping['San Juan, PR'] = [-66.070518, 18.456285]
+    # print(mapping['San Juan, PR'])
+    # print(mapping['St. Thomas, VI'])
+    # mapping['St. Thomas, VI'] = [-64.9365344, 18.3532896]
+    # print(mapping['St. Thomas, VI'])
+    # g.save_mapping(mapping)
