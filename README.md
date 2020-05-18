@@ -6,7 +6,7 @@ from Syracuse's TRAC web API.
 
 El pueblo unido jamás será vencido.
 
-## structure
+## Structure
 
 Backend: `/back` has a RESTful API in Python that uses an LSTM trained on ICE arrests to serve predicted future arrests by county.
 
