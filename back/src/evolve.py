@@ -394,8 +394,8 @@ class AutomaticModelEvolution():
 if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
-        target = 100)
+    # world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
+    #     target = 100)
     # world.run()
     # world.save()
     world.predict(12, 2022)
