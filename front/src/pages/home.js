@@ -274,8 +274,7 @@ export default function Home() {
         maxdate={maxdate}
         fetchdatedata={fetchdatedata}
         settoday={settoday}/>
-        {
-          datedata === null ?
+        {datedata === null ?
           <header className='body'>
             <p>
               AI Melts ICE
