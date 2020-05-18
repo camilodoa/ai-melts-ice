@@ -389,7 +389,7 @@ class AutomaticModelEvolution():
         Generate time series data up until month/year
         '''
         ancestor = self.animate(self.get_ancestor())
-        ancestor.predict_forward(month, year)
+        ancestor.predict(month, year)
 
 if __name__ == '__main__':
     'Usage'

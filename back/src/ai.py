@@ -105,44 +105,58 @@ class Model():
             print('Saved individual to individuals/{0}.genome'.format(name))
         return self.model
 
-    def predict_forward(self, month, year):
+    def predict(self, month, year):
         '''
         Generate predictions until month year (greater than 2014) and write them to
         predictions.csv
         '''
+
         if self.error is None: self.fit()
+
+        g = Generator()
+
         # Load dataset
-        df = pd.read_csv(self.dataset, infer_datetime_format = True, parse_dates = ['Date']).sort_values('Date')
+        df = pd.read_csv(self.dataset, infer_datetime_format=True,
+            parse_dates=['Date'])
+
+        # Drop dates, they are not a part of the input of our NN model
+        predictions_df = df.drop(['Date'], axis = 1)
+
         # Extract last recorded date
         date = pd.to_datetime(df['Date'].values[-1])
+
         # If the date predicted is in or before our dataset, do nothing
         if year < date.year: return None
+
         # Calculate difference between last date in dataset and the date given
         diff = (year - date.year) * 12 + month - date.month
-        # Drop dates, they are not a part of the input of our NN self.model
+
         # Generate predictions for each month in difference
-        # Final dataset with dates
-        final = df.copy()
-        # Prediction dataset with no date attribute
-        df = df.drop(['Date'], axis = 1)
-        g = Generator()
         for i in range(diff):
-            # Convert last t months into data
-            data = g.convert(df, self.t, -self.t, 0)
-            # Use data to predict with the self.model
+            # Convert last 12 months into data
+            data = g.convert(predictions_df, self.t, -self.t, 0)
+
+            # Use data to predict with the model
             predictions = self.model.predict(data)
-            # Update current  date
+
+            # Update current prediction date
             date = date + relativedelta.relativedelta(months = 1)
-            # Only keep integer predictions - negative predictions are set to 0
-            predictions = {city : int(round(max(prediction, 0))) for city, prediction in zip(df.columns, predictions[0])}
+
+            # Only keep integer predictions. Negative predictions are set to 0
+            predictions = {city : int( round( max(prediction, 0) ) ) for city, prediction in zip(predictions_df.columns, predictions[0])}
+
             # Append prediction to the predictions dataset (without date column)
-            df = df.append(predictions, ignore_index = True)
+            predictions_df = predictions_df.append(predictions, ignore_index = True)
+
             # Add date field to the prediction dictionary
             predictions.update({'Date' : date})
+
             # Append prediction dictionary with date to final DataFrame
-            final = final.append(predictions, ignore_index = True)
-        # Save data frame
-        final.to_csv('predictions.csv', index = False)
+            df = df.append(predictions, ignore_index = True)
+
+        # Save dataframe
+        df.to_csv('predictions.csv', index = False)
+
         return predictions
 
     def get_genome(self):
