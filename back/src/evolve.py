@@ -47,9 +47,9 @@ class AutomaticModelEvolution():
         self.ancestor = ancestor
         # Genome attributes
         # Mutation probabilities
-        self.mutation = 0.2
-        self.addition_rate = 0.15
-        self.deletion_rate = 0.15
+        self.mutation = 0.3
+        self.addition_rate = 0.2
+        self.deletion_rate = 0.2
         # Layer possibilities
         self.layer_options = {'Dense': Dense, 'LSTM': LSTM,
             'SimpleRNN' : SimpleRNN, 'GRU' : GRU}
@@ -57,7 +57,7 @@ class AutomaticModelEvolution():
         # Model parameters
         self.optimizer_options = ['Adam', 'SGD', 'RMSprop', 'Adadelta',
             'Adagrad', 'Adamax', 'Nadam', 'Ftrl']
-        self.loss_options = ['mse', 'mae', 'mape', 'msle', 'cosine_loss',
+        self.loss_options = ['mse', 'mae', 'mape', 'cosine_loss',
             'huber', 'log_cosh']
         self.fitness = 'evaluation'
         # DNA constraints
@@ -393,9 +393,11 @@ class AutomaticModelEvolution():
 
 if __name__ == '__main__':
     'Usage'
-    # Run until we get a good solution or until we reach generation 50s
-    world = AutomaticModelEvolution(size = 6, generations = 10, ancestor = True,
-        target = 100)
+    # Run until we get a good solution or until we reach generation 15
+    # Or get an error on testing that is less than 1
+    world = AutomaticModelEvolution(size = 10, generations = 15, ancestor = False,
+        target = 1)
+    print(world.get_ancestor())
     # world.run()
     # world.save()
-    world.predict(12, 2022)
+    # world.predict(12, 2022)
