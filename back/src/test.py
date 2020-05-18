@@ -17,8 +17,11 @@ if __name__ == '__main__':
     # world.run()
     # world.save()
 
-    primis = Model(t = 12, split = 0.90, verbose=1)
-    primis.model = load_model('model.h5')
-    primis.model.summary()
+    primis = Model(t = 12, split = 1, verbose=1, epochs = 1000)
+
     primis.fit()
+
+    # primis.model = load_model('model.h5')
+    # primis.model.summary()
+
     primis.predict(12, 2020)

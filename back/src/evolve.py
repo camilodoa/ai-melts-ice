@@ -58,7 +58,7 @@ class AutomaticModelEvolution():
         self.optimizer_options = ['Adam', 'SGD', 'RMSprop', 'Adadelta',
             'Adagrad', 'Adamax', 'Nadam', 'Ftrl']
         self.loss_options = ['mse']
-        self.fitness = 'evaluation'
+        self.fitness = 'loss'
         # DNA constraints
         self.min_t = 6
         self.max_t = 12

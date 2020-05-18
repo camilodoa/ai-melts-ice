@@ -20,13 +20,10 @@ class Model():
     Also takes in the path to a time-series Pandas dataset, with an attribute
     labeled "Date".
     '''
-    def __init__(self, t = 5, split = 0.70, epochs = 1000,
+    def __init__(self, t = 12, split = 0.70, epochs = 1000,
                 neurons = 100,
                 layers = [
-                    Dense(200, activation = 'sigmoid'),
-                    Dense(300, activation = 'relu'),
-                    Dense(500, activation = 'sigmoid'),
-                    LSTM(150, activation = 'relu')
+                    LSTM(200)
                 ], optimizer = 'adam', loss = 'mse', verbose = 0,
                 dataset='data.csv'):
         '''
@@ -80,14 +77,14 @@ class Model():
         # Define the self.model's input's shape
         input_shape = (self.t, self.output_size)
         # Add the first LSTM layer with an input shape of t for each county
-        self.model.add(LSTM(self.neurons, activation = 'relu', return_sequences = True, input_shape = input_shape))
+        self.model.add(LSTM(self.neurons, return_sequences = True, input_shape = input_shape))
         if self.verbose: bar.next()
         # Add customizable layers
         for layer in self.layers:
             self.model.add(layer)
             if self.verbose: bar.next()
         # Output layer
-        self.model.add(Dense(self.output_size, activation = 'relu'))
+        self.model.add(Dense(self.output_size))
         if self.verbose: bar.next()
         # Compile the model
         self.model.compile(optimizer = self.optimizer, loss = self.loss)
@@ -167,7 +164,7 @@ class Model():
             date = date + relativedelta.relativedelta(months = 1)
 
             # Make a dictionary of {cities : predicted arrests}
-            predictions = {city : int(round(max(prediction, 0))) for city, prediction in zip(predictions_df.columns, predictions[0])}
+            predictions = {city : int(round(prediction)) for city, prediction in zip(predictions_df.columns, predictions[0])}
 
             # Append prediction to the predictions dataset (without date column)
             predictions_df = predictions_df.append(predictions, ignore_index = True)
@@ -181,6 +178,9 @@ class Model():
             if self.verbose: bar.next()
 
         if self.verbose: bar.finish()
+        dates = df.pop('Date')
+        df = df.clip(lower = 0, axis = 1)
+        df['Date'] = dates
         # Save dataframe
         df.to_csv('predictions.csv', index = False)
 
