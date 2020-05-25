@@ -52,7 +52,7 @@ def dates():
     # Define response with all of the dates in dataset
     response = jsonify(predictions_unparsed['Date'].values.tolist())
     # Cross origin
-    response.headers.add('Access-Control-Allow-Origin', '*')
+#     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
@@ -82,7 +82,7 @@ def predict(month, year):
     # Define the response
     response = jsonify(response)
     # Cross origin
-    response.headers.add('Access-Control-Allow-Origin', '*')
+#     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
@@ -118,7 +118,7 @@ def counties():
     # Define the response
     response = jsonify({'counties' : counties.columns.values.tolist()})
     # Cross origin
-    response.headers.add('Access-Control-Allow-Origin', '*')
+#     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 @app.route('/countydata/<string:county>', methods=['GET'])
@@ -138,7 +138,7 @@ def countydata(county):
     # Define response
     response = jsonify(response)
     # Cross origin
-    response.headers.add('Access-Control-Allow-Origin', '*')
+#     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 if __name__ == '__main__':
