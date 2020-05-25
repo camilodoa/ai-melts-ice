@@ -3,5 +3,5 @@ pandas
 Flask
 geopy
 keras==2.2.5
-Tensorflow==1.14
+Tensorflow==1.15.2
 progress
