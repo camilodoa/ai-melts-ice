@@ -1,5 +1,5 @@
 {
-  "name": "ai.melts.ice",
+  "name": "ai-melts-ice",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://ai-melts-ice.ml/",
@@ -7,8 +7,10 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@vx/vx": "0.0.196",
     "acorn": "^7.1.1",
     "bootstrap": "^4.4.1",
+    "d3-format": "^1.4.4",
     "d3-time-format": "^2.2.3",
     "eslint-plugin-react-hooks": "^3.0.0",
     "kind-of": "^6.0.3",
@@ -23,7 +25,8 @@
     "react-scripts": "^3.4.1",
     "react-vis": "^1.11.7",
     "redux": "^4.0.5",
-    "serialize-javascript": "^2.1.2"
+    "serialize-javascript": "^2.1.2",
+    "yargs-parser": "^18.1.3"
   },
   "scripts": {
     "start": "react-scripts start",

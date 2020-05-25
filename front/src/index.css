@@ -96,18 +96,16 @@ code {
   font-size: calc(10px + 1.5vmin);
 }
 
-/*  safety.js  */
-
-.safety-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.safety-main{
+.popup-header{
   text-align: left;
+  color: #1b1e21;
+  font-size: calc(10px + 1.5vmin);
 }
-
+.popup-body{
+  text-align: left;
+  color: #1b1e21;
+  font-size: calc(10px + 1vmin);
+}
 
 /*  header.js  */
 .react-datepicker-wrapper,
