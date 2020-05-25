@@ -50,7 +50,7 @@ def dates():
     Return list of predicted dates
     '''
     # Define response with all of the dates in dataset
-    response = jsonify(predictions['Date'].values.tolist())
+    response = jsonify(predictions_unparsed['Date'].values.tolist())
     # Cross origin
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
@@ -76,7 +76,8 @@ def predict(month, year):
     prediction = predictions[predictions['Date'] == target_str].drop(['Date'], axis=1).to_dict(orient = 'records')[0]
     response = {
         'prediction' :  True if target >= prediction_start else False,
-        'data' : to_geojson(prediction)
+        'data' : to_geojson(prediction),
+        'predictionStart' : prediction_start
     }
     # Define the response
     response = jsonify(response)

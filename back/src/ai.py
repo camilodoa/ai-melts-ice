@@ -101,12 +101,14 @@ class Model():
         if self.error is not None: return self.error
         if self.model is None: self.model = self.build()
         self.history = History()
-        self.history = self.model.fit(self.X_train, self.Y_train, epochs = self.epochs, callbacks=[self.history], verbose=self.verbose)
+        self.history = self.model.fit(self.X_train, self.Y_train,
+            epochs = self.epochs, callbacks=[self.history], verbose=self.verbose)
         # Assign fitness
         if self.final:
             self.error = self.history.history['loss'][-1]
         else:
-            self.error = self.model.evaluate(self.X_test, self.Y_test, verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
+            self.error = self.model.evaluate(self.X_test, self.Y_test,
+                verbose=self.verbose) if type == 'evaluation' else self.history.history['loss'][-1]
         return self.error
 
     def save(self, name = 'model'):
@@ -128,62 +130,42 @@ class Model():
         Generate predictions until month year (greater than 2014) and write them to
         predictions.csv
         '''
-
-        # if self.error is None: self.fit()
-
         g = Generator()
-
         # Load dataset
         df = pd.read_csv(self.dataset, infer_datetime_format=True,
             parse_dates=['Date'])
-
         # Drop dates, they are not a part of the input of our NN model
         predictions_df = df.drop(['Date'], axis = 1)
-
         # Extract last recorded date
         date = pd.to_datetime(df['Date'].values[-1])
-
         # If the date predicted is in or before our dataset, do nothing
         if year < date.year: return None
-
         # Calculate difference between last date in dataset and the date given
         diff = (year - date.year) * 12 + month - date.month
         if self.verbose: bar = Bar('Predicting months since ' + str(date), fill='=', max=diff)
-
         # Generate predictions for each month in difference
         for i in range(diff):
             # Convert last 12 months into data
             data = g.convert(predictions_df, self.t, -self.t, 0)
-
             # Use data to predict with the model
             predictions = self.model.predict(data)
-
-            # if self.verbose: print('Prediction', predictions)
-
             # Update current prediction date
             date = date + relativedelta.relativedelta(months = 1)
-
             # Make a dictionary of {cities : predicted arrests}
             predictions = {city : int(round(prediction)) for city, prediction in zip(predictions_df.columns, predictions[0])}
-
             # Append prediction to the predictions dataset (without date column)
             predictions_df = predictions_df.append(predictions, ignore_index = True)
-
             # Add date field to the prediction dictionary
             predictions.update({'Date' : date})
-
             # Append prediction dictionary with date to final DataFrame
             df = df.append(predictions, ignore_index = True)
-
             if self.verbose: bar.next()
-
         if self.verbose: bar.finish()
         dates = df.pop('Date')
         df = df.clip(lower = 0, axis = 1)
         df['Date'] = dates
         # Save dataframe
         df.to_csv('predictions.csv', index = False)
-
         return predictions
 
     def get_genome(self):
