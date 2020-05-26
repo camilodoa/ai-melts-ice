@@ -11,7 +11,6 @@
       return;
     }
   }
-
   if (l.search) {
     var q = {};
     l.search.slice(1).split('&').forEach(function(v) {
