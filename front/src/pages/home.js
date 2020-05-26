@@ -1,39 +1,104 @@
 import React, {useEffect, useRef, useState} from 'react';
-import Header from '../components/header';
+import Header from './components/header';
 import Spinner from 'react-bootstrap/Spinner';
-import Popup from '../components/popup';
+import Popup from './components/popup';
 import ReactDOM from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
 import api from '../rest';
-import useWindowSize from '../hooks/window';
-import logo from '../images/logo512.png';
-
+import useWindowSize from '../window';
+import logo from '../logo512.png';
 
 mapboxgl.accessToken = token.mapBoxToken;
 
 export default function Home() {
-
-  // map render functions + state ==============================================
+  // Utility definitions
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-
+  'July', 'August', 'September', 'October', 'November', 'December'];
   const size = useWindowSize();
-
+  // Mapbox ref
   let mapContainer = useRef();
+  // State
   const [lng] = useState(-96);
   const [lat] = useState(40);
   const [zoom] = useState(size.width < 550 ? 2 : 3.6);
-  // min and max state
   const[minDate, setMinDate] = useState(new Date(2015, 1));
   const [maxDate, setMaxDate] = useState(new Date(2021, 12));
-  // date data state
   const [dateData, setDateData] = useState(null);
-  // current date that data is being displayed for
   const [today, setToday] = useState(new Date() <= maxDate ? new Date() : maxDate);
-
-
+  // Lifecycle
+  useEffect(() => {
+    // Component did load
+    fetchDates();
+    fetchDateData(today);
+  }, [today]);
+  useEffect(() => {
+    // Data loaded
+    if (dateData !== null) {
+      getMap();
+    }
+  }, [dateData]);
+  // API calls
+  async function fetchDates(){
+    /*
+    Fetch API date ranges
+     */
+    let url = api.root + '/dates';
+    return await fetch(url).then(
+        r => r.text()
+    ).then(
+        r => r = JSON.parse(r)
+    ).then(r => {
+      let minStr = r[0].split('-');
+      let minYear = parseInt(minStr[0]);
+      let minMonth = parseInt(minStr[1]);
+      let maxStr = r[r.length - 1].split('-');
+      let maxYear = parseInt(maxStr[0]);
+      let maxMonth = parseInt(maxStr[1]);
+      return [new Date(minYear, minMonth), new Date(maxYear, maxMonth)]
+    }).then(date => {
+      setMinDate(date[0]);
+      setMaxDate(date[1]);
+    }).catch(
+        err => console.log(err)
+    );
+  }
+  async function fetchCountyData (county) {
+    /*
+    Fetch county data given name
+     */
+    let url = api.root + '/countydata/' + county.replace(' ', '%20');
+    return await fetch(url).then(
+        r => r.text()
+    ).then(
+        r => r = JSON.parse(r)
+    ).then(r => {
+      return r.data.map(dataPoint => (
+          {
+            x: new Date(dataPoint.date.split('-')[0], dataPoint.date.split('-')[1]),
+            y: dataPoint.arrests
+          }
+      ));
+    }).catch(
+        err => console.log(err)
+    );
+  }
+  async function fetchDateData(date){
+    let url = api.root + '/predict/<month>/<year>';
+    url = url.replace('<month>',
+        date.getMonth() + 1).replace('<year>', date.getFullYear())
+    return await fetch(url).then(
+        r => r.text()
+    ).then(
+        r => r = JSON.parse(r)
+    ).then(r => {
+          setDateData(r);
+        }
+    ).catch(
+        err => console.log(err)
+    );
+  }
+  // Map
   function getMap() {
     const radiusSizes = size.width < 550 ? [ 30, 100, 40, 500, 50] : [ 30, 100, 40, 500, 60];
     const fontSizes = [ 20, 100, 30, 500, 40];
@@ -46,7 +111,13 @@ export default function Home() {
       zoom: zoom
     });
     map.on('load', () => {
+      /*
+      When the map loads, add all of its features
+       */
       map.addSource('ai-melts-ice', {
+        /*
+        Load data into ma[
+         */
         type: 'geojson',
         data: dateData['data'],
         cluster: true,
@@ -57,6 +128,9 @@ export default function Home() {
         }
       });
       map.addLayer({
+        /*
+        Add clustered circle symbol
+         */
         id: 'cluster',
         type: 'circle',
         source: 'ai-melts-ice',
@@ -84,6 +158,9 @@ export default function Home() {
         }
       });
       map.addLayer({
+        /*
+        Add clustered number of arrests
+         */
         id: 'cluster-count',
         type: 'symbol',
         source: 'ai-melts-ice',
@@ -103,6 +180,9 @@ export default function Home() {
         }
       });
       map.addLayer({
+        /*
+        Add unclustered circle symbol
+         */
         id: 'unclustered-point',
         type: 'circle',
         source: 'ai-melts-ice',
@@ -130,6 +210,9 @@ export default function Home() {
         }
       });
       map.addLayer({
+        /*
+        Add unclusted point number of arrests
+         */
         id: 'unclustered-count',
         type: 'symbol',
         source: 'ai-melts-ice',
@@ -148,8 +231,10 @@ export default function Home() {
           ]
         }
       });
-      // inspect a cluster on click
       map.on('click', 'cluster', function(e) {
+        /*
+       When the client clicks on an clustered point, zoom in
+        */
         var features = map.queryRenderedFeatures(e.point, {
           layers: ['cluster']
         });
@@ -158,7 +243,6 @@ export default function Home() {
           clusterId,
           function(err, zoom) {
             if (err) return;
-
             map.easeTo({
               center: features[0].geometry.coordinates,
               zoom: zoom
@@ -166,17 +250,23 @@ export default function Home() {
           }
         );
       });
-
-      map.on('mouseenter', 'cluster', function() {
-        map.getCanvas().style.cursor = 'pointer';
+      map.on('click', 'unclustered-point', function(e) {
+        /*
+        When the client clicks on an unclustered point, show popup
+         */
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+        addPopup(e.features[0].properties.arrests, coordinates, e.features[0].properties.county)
       });
-
-      map.on('mouseleave', 'cluster', function() {
-        map.getCanvas().style.cursor = '';
-      });
-
-      // Add popup to map
       async function addPopup(arrests, coordinates, county) {
+        /*
+        Adds popup to the map with customizable Popup component
+         */
         let countyData = await fetchCountyData(county);
         const placeholder = document.createElement('popup');
         const predictionStart = dateData.predictionStart;
@@ -191,111 +281,40 @@ export default function Home() {
             .setLngLat(coordinates)
             .addTo(map);
       }
-
-      map.on('click', 'unclustered-point', function(e) {
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-        addPopup(e.features[0].properties.arrests, coordinates, e.features[0].properties.county);
-      });
-
       map.on('mouseenter', 'unclustered-point', function() {
+        /*
+        Change mouse appearance on clickable counties
+         */
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'unclustered-point', function() {
+        /*
+       Change mouse appearance on clickable counties
+        */
+        map.getCanvas().style.cursor = '';
+      });
+      map.on('mouseenter', 'cluster', function() {
+        /*
+      Change mouse appearance on clickable counties
+       */
         map.getCanvas().style.cursor = 'pointer';
       });
 
-      map.on('mouseleave', 'unclustered-point', function() {
+      map.on('mouseleave', 'cluster', function() {
+        /*
+      Change mouse appearance on clickable counties
+       */
         map.getCanvas().style.cursor = '';
       });
     });
   }
-
-  // fetch county data
-  async function fetchCountyData (county) {
-    let url = api.root + '/countydata/' + county.replace(' ', '%20');
-    return await fetch(url).then(
-        r => r.text()
-    ).then(
-        r => r = JSON.parse(r)
-    ).then(r => {
-      return r.data.map(dataPoint => (
-          {
-            x: new Date(dataPoint.date.split('-')[0], dataPoint.date.split('-')[1]),
-            y: dataPoint.arrests
-          }
-      ));
-    }).catch(
-        err => console.log(err)
-    );
-  }
-
-  // date data fetch functions + state =========================================
-
-  // fetch date range from API
-  async function fetchDates(){
-    let url = api.root + '/dates';
-    return await fetch(url).then(
-      r => r.text()
-    ).then(
-      r => r = JSON.parse(r)
-    ).then(r => {
-      let minstr = r[0].split('-');
-      let minyear = parseInt(minstr[0]);
-      let minmonth = parseInt(minstr[1]);
-
-      let maxstr = r[r.length - 1].split('-');
-      let maxyear = parseInt(maxstr[0]);
-      let maxmonth = parseInt(maxstr[1]);
-
-      return [new Date(minyear, minmonth), new Date(maxyear, maxmonth)]
-    }).then(date => {
-      setMinDate(date[0]);
-      setMaxDate(date[1]);
-    }).catch(
-      err => console.log(err)
-    );
-  }
-
-  // fetch date data from API
-  async function fetchdatedata(date){
-    let url = api.root + '/predict/<month>/<year>';
-    url = url.replace('<month>',
-        date.getMonth() + 1).replace('<year>', date.getFullYear())
-    return await fetch(url).then(
-      r => r.text()
-    ).then(
-      r => r = JSON.parse(r)
-    ).then(r => {
-        setDateData(r);
-      }
-    ).catch(
-      err => console.log(err)
-    );
-  }
-
-  // component did mount
-  useEffect(() => {
-    // get date and US info
-    fetchDates();
-    fetchdatedata(today);
-  }, []);
-
-  // updates on change of date data
-  useEffect(() => {
-    if (dateData !== null) {
-      getMap();
-    }
-  }, [dateData]);
   return (
     <div>
       <Header
-        mindate={minDate}
-        maxdate={maxDate}
-        fetchdatedata={fetchdatedata}
-        settoday={setToday}/>
+        minDate={minDate}
+        maxDate={maxDate}
+        fetchDateData={fetchDateData}
+        setToday={setToday}/>
         {dateData === null ?
           <header className='body'>
             <img src={logo} className='logo' alt='logo'/>
