@@ -1,9 +1,31 @@
 from geopy.geocoders import Nominatim
-from query import Syracuse
 import pandas as pd
 import numpy as np
 import pickle
 import time
+import requests
+
+class Syracuse():
+    '''
+    Object used to query Syracuse deportation database
+
+    Website: https://trac.syr.edu/phptools/immigration/arrest/
+    '''
+    def __init__(self):
+
+        self.cities = 385
+        self.counties = 1972
+
+    def query(self, county):
+        url = (
+            'https://trac.syr.edu/phptools/immigration/arrest/graph.php?stat='
+            'count&timescale=fymon&county=[COUNTY]&timeunit=number'
+        ).replace('[COUNTY]', county)
+
+        headers = {
+            'content-type': 'application/json'
+        }
+        return requests.get(url, headers=headers).json()
 
 class Generator():
     '''
@@ -116,13 +138,5 @@ class Generator():
 if __name__ == '__main__':
     'Usage'
     g = Generator()
-
-    # g.initialize()
-    # mapping = g.load_mapping()
-    # print(mapping['San Juan, PR'])
-    # mapping['San Juan, PR'] = [-66.070518, 18.456285]
-    # print(mapping['San Juan, PR'])
-    # print(mapping['St. Thomas, VI'])
-    # mapping['St. Thomas, VI'] = [-64.9365344, 18.3532896]
-    # print(mapping['St. Thomas, VI'])
-    # g.save_mapping(mapping)
+    g.reinit = True
+    g.initialize()

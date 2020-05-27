@@ -84,6 +84,9 @@ export default function Home() {
     );
   }
   async function fetchDateData(date){
+    /*
+    Get monthly prediction from API
+     */
     let url = api.root + '/predict/<month>/<year>';
     url = url.replace('<month>',
         date.getMonth() + 1).replace('<year>', date.getFullYear())
@@ -100,6 +103,9 @@ export default function Home() {
   }
   // Map
   function getMap() {
+    /*
+    Create a Mapbox map and attach it to mapContainer
+     */
     const radiusSizes = size.width < 550 ? [ 30, 100, 40, 500, 50] : [ 30, 100, 40, 500, 60];
     const fontSizes = [ 20, 100, 30, 500, 40];
     const colors = ['#ffcc00', 100, '#ff9966', 500, '#cc3300'];
@@ -116,7 +122,7 @@ export default function Home() {
        */
       map.addSource('ai-melts-ice', {
         /*
-        Load data into ma[
+        Load data into map
          */
         type: 'geojson',
         data: dateData['data'],
