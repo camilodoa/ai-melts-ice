@@ -61,7 +61,7 @@ The backend is divided up into a number of files:
 
 - `main.py`
 
-> starts a RESTful API that serves the data in `predictions.csv`
+> Starts a RESTful API that serves the data in `predictions.csv`
 
 ### Dependencies:
 
