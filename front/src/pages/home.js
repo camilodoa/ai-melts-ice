@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Header from './components/header';
-import Spinner from 'react-bootstrap/Spinner';
 import Popup from './components/popup';
 import ReactDOM from 'react-dom';
 import mapboxgl from 'mapbox-gl';
@@ -322,13 +321,13 @@ export default function Home() {
         fetchDateData={fetchDateData}
         setToday={setToday}/>
         {dateData === null ?
-          <header className='body'>
-            <img src={logo} className='logo' alt='logo'/>
-            <p>
-              AI Melts ICE
-            </p>
-            <Spinner animation="grow" variant="dark" role="status"/>
-          </header>
+          <h1 className='body header my-3 mt-5"'>
+              <img src={logo} className='logo' alt='logo'/>
+              <p className='header my-3'>
+                AI Melts ICE
+              </p>
+              <p className="about-main">El pueblo unido jamás será vencido.</p>
+          </h1>
           :
           <div className='map'>
             <div className='sidebarStyle'>

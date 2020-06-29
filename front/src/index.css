@@ -2,9 +2,6 @@
 @import "../node_modules/react-datepicker/dist/react-datepicker.css";
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
 @import '../node_modules/react-vis/dist/style.css';
-
-
-/*  index.js  */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
@@ -16,7 +13,6 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
 /*  App.js  */
 .App {
   min-height: 100vh;
@@ -33,10 +29,9 @@ code {
 .App a:visited{
   text-decoration: none;
 }
-
 /*  home.js  */
 .logo {
-  height: 10vmin;
+  height: 30vmin;
   pointer-events: none;
 }
 .body {
@@ -76,7 +71,6 @@ code {
 /*  about.js  */
 .about {
   text-align: center;
-
 }
 .about-logo {
   height: 30vmin;
@@ -95,7 +89,6 @@ code {
   color: #1b1e21;
   font-size: calc(10px + 1.5vmin);
 }
-
 .popup-header{
   text-align: left;
   color: #1b1e21;
@@ -106,10 +99,8 @@ code {
   color: #1b1e21;
   font-size: calc(10px + 1vmin);
 }
-
 /*  header.js  */
-.react-datepicker-wrapper,
-.react-datepicker__input-container input {
+.react-datepicker-wrapper, .react-datepicker__input-container input {
     border-radius: 0;
     margin-right: .5vmin;
 }
@@ -119,8 +110,6 @@ code {
 .non-resizing{
   min-width: 80px;
 }
-
-
 /*  footer.js  */
 .footer {
   font-size: calc(10px + 1.5vmin);
