@@ -60,6 +60,11 @@ The backend is divided up into a number of files:
 - `evolve.py`
 
 > Leverages evolution to find the optimal model by evolving a population of deep learning models with a low test error.
+Specifically, their genomes are composed of: # of months to base prediction off of (t), training/test split (split),
+number of epochs to train for (epochs), number of input layer size (neurons),
+an array of layers (layers), optimizer (optimizer), loss function (loss - for
+comparison stability reasons this is always set to mse), verbosity (verbose)).
+Layers are added/deleted using UMAD (uniform mutation by adition and deletion).
 
 - `main.py`
 

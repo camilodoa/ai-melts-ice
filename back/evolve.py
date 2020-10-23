@@ -1,6 +1,7 @@
 from ai import Model
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU
+from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, TimeDistributed
+from tensorflow.keras.layers import Bidirectional, RNN
 from tensorflow.keras.models import load_model
 import re
 import pickle
@@ -51,8 +52,11 @@ class AutomaticModelEvolution():
         self.addition_rate = 0.2
         self.deletion_rate = 0.2
         # Layer possibilities
-        self.layer_options = {'Dense': Dense, 'LSTM': LSTM,
-            'SimpleRNN' : SimpleRNN, 'GRU' : GRU}
+        self.layer_options = {
+            'Dense': Dense, 'LSTM': LSTM,
+            'SimpleRNN': SimpleRNN, 'GRU': GRU,
+            'TimeDistributed': TimeDistributed, 'RNN': RNN
+        }
         self.activation_functions = ['relu', 'tanh', 'sigmoid', 'softmax']
         # Model parameters
         self.optimizer_options = ['Adam', 'SGD', 'RMSprop', 'Adadelta',
@@ -60,7 +64,7 @@ class AutomaticModelEvolution():
         self.loss_options = ['mse']
         self.fitness = 'loss'
         # DNA constraints
-        self.min_t = 6
+        self.min_t = 2
         self.max_t = 12
         self.min_split = 0.7
         self.max_split = 0.8
@@ -69,12 +73,14 @@ class AutomaticModelEvolution():
         self.min_num_layers = 0
         self.max_num_layers = 15
         self.min_neurons = 32
-        self.max_neurons = 1000
+        self.max_neurons = 10000
         # Types of mutations
-        self.mutations = { 't' : self.delta_t, 'split' : self.delta_split,
+        self.mutations = {
+            't' : self.delta_t, 'split' : self.delta_split,
             'epochs' : self.delta_epochs, 'neurons' : self.delta_neurons,
             'layers' : self.delta_layers, 'optimizer' : self.delta_optimizer,
-            'loss' : self.delta_loss }
+            'loss' : self.delta_loss
+        }
         # Individual names
         self.names = []
         with open('names.txt','r') as f:
@@ -94,7 +100,9 @@ class AutomaticModelEvolution():
                 split = random.uniform(self.min_split, self.max_split),
                 epochs = random.randint(self.min_epochs, self.max_epochs),
                 neurons = random.randint(self.min_neurons, self.max_neurons),
-                layers = self.generate_layers(random.randint(self.min_num_layers, self.max_num_layers)),
+                layers = self.generate_layers(
+                    random.randint(self.min_num_layers, self.max_num_layers)
+                ),
                 optimizer = random.choice(self.optimizer_options),
                 loss = random.choice(self.loss_options),
                 verbose = self.verbose)
@@ -140,7 +148,9 @@ class AutomaticModelEvolution():
             # If no mutation occurs, keep the same chromosome
             else: mutated_genome.update({name : chromosome})
         # Mutate each layer by the same amount
-        mutated_genome.update({'layers' : self.mutations['layers'](genome.get('layers'))})
+        mutated_genome.update(
+            {'layers' : self.mutations['layers'](genome.get('layers'))}
+        )
         return mutated_genome
 
     def crossover(self, i1, i2):
@@ -149,7 +159,11 @@ class AutomaticModelEvolution():
         '''
         new_genome = {}
         for gene in i1.get_genome().keys():
-            new_genome.update({gene : random.choice([i1.get_genome()[gene], i2.get_genome()[gene]])})
+            new_genome.update(
+                {gene : random.choice(
+                    [i1.get_genome()[gene], i2.get_genome()[gene]]
+                )}
+            )
         return new_genome
 
     def reproduce(self):
@@ -167,7 +181,8 @@ class AutomaticModelEvolution():
                     parent1 = self.select()
                     parent2 = self.select()
                     # Combine parent genomes and mutate
-                    offspring = self.animate(self.mutate(self.crossover(parent1, parent2)))
+                    offspring = self.animate(
+                        self.mutate(self.crossover(parent1, parent2)))
                     # If the fit fails, that means that the baby is an incorrect
                     # configuration
                     offspring.fit(type = self.fitness)
@@ -189,7 +204,7 @@ class AutomaticModelEvolution():
         '''
         layers = []
         for i in range(num_layers):
-            neurons = random.randint(20, 1000)
+            neurons = random.randint(this.min_neurons, this.max_neurons)
             layer = random.choice(list(self.layer_options.values()))
             # If the layer is Dense, we get to pick our own activation function
             if layer.__class__.__name__ == 'Dense':
@@ -221,7 +236,7 @@ class AutomaticModelEvolution():
         else: return new_epochs
 
     def delta_neurons(self, neurons):
-        change = random.randint(-100, 100)
+        change = random.randint(-500, 500)
         new_neurons = neurons + change
         if new_neurons > self.max_neurons: return self.max_neurons
         elif new_neurons < self.min_neurons: return self.min_neurons
@@ -264,14 +279,17 @@ class AutomaticModelEvolution():
         '''
         Returns best individual selected from population using a tournament
         '''
-        return min([random.choice(self.population) for _ in range(self.tournament)], key = lambda indiv : indiv.fit(type = self.fitness))
+        return min(
+            [random.choice(self.population) for _ in range(self.tournament)],
+            key = lambda indiv : indiv.fit(type = self.fitness))
 
 
     def fittest(self):
         '''
         Returns fittest individual in population
         '''
-        return min(self.population, key = lambda indiv : indiv.fit(type = self.fitness))
+        return min(
+            self.population, key = lambda indiv : indiv.fit(type = self.fitness))
 
     def get_ancestor(self):
         individuals = './individuals/'
@@ -394,7 +412,7 @@ if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 15
     # Or get an error on testing that is less than 1
-    world = AutomaticModelEvolution(size = 5, generations = 15, ancestor = False,
+    world = AutomaticModelEvolution(size = 15, generations = 20, ancestor = False,
         target = 90, verbose=0)
     world.run()
     world.save()
