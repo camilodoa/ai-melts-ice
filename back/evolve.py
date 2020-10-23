@@ -1,6 +1,6 @@
 from ai import Model
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, TimeDistributed
+from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU
 from tensorflow.keras.layers import Bidirectional
 from tensorflow.keras.models import load_model
 import re
@@ -54,8 +54,7 @@ class AutomaticModelEvolution():
         # Layer possibilities
         self.layer_options = {
             'Dense': Dense, 'LSTM': LSTM,
-            'SimpleRNN': SimpleRNN, 'GRU': GRU,
-            'TimeDistributed': TimeDistributed
+            'SimpleRNN': SimpleRNN, 'GRU': GRU
         }
         self.activation_functions = ['relu', 'tanh', 'sigmoid', 'softmax']
         # Model parameters
