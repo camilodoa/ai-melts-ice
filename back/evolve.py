@@ -11,8 +11,8 @@ from progress.bar import Bar
 
 class AutomaticModelEvolution():
     '''
-    Automatic Model Evolution (AME):
-    Evolutionary search for finding optimal DL model for ICE raids by county
+    Automatic Model Evolution:
+    Evolutionary search for finding optimal DL model
     '''
     # Constructor ##############################################################
     def __init__(self, size = 10, generations = 50, ancestor = False,
@@ -104,7 +104,6 @@ class AutomaticModelEvolution():
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                if self.verbose: print("In individual", e)
                 continue
         return learner
 
