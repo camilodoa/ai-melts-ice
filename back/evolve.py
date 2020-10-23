@@ -312,7 +312,7 @@ class AutomaticModelEvolution():
         '''
         Create initial population
         '''
-        bar = Bar('Initializing population',  fill='=', max=self.capacity)
+        bar = Bar('Initializing population\n',  fill='=', max=self.capacity)
         # Add best previously found individual
         if self.ancestor:
             # Add ancestor to population
