@@ -204,7 +204,7 @@ class AutomaticModelEvolution():
         '''
         layers = []
         for i in range(num_layers):
-            neurons = random.randint(this.min_neurons, this.max_neurons)
+            neurons = random.randint(self.min_neurons, self.max_neurons)
             layer = random.choice(list(self.layer_options.values()))
             # If the layer is Dense, we get to pick our own activation function
             if layer.__class__.__name__ == 'Dense':
