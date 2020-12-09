@@ -134,9 +134,15 @@ class Generator():
     def load_mapping(self):
         return pickle.load(open("coordinates.dict","rb"))
 
+    def add_location(self, df):
+        mapping = self.load_mapping()
+        print(df)
+
 
 if __name__ == '__main__':
     'Usage'
     g = Generator()
-    g.reinit = True
-    g.initialize()
+    df = pd.read_csv('data.csv', encoding = 'utf8')
+    print(g.add_location(df))
+    # g.reinit = True
+    # g.initialize()

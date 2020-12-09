@@ -411,7 +411,7 @@ if __name__ == '__main__':
     'Usage'
     # Run until we get a good solution or until we reach generation 15
     # Or get an error on testing that is less than 1
-    world = AutomaticModelEvolution(size = 15, generations = 20, ancestor = False,
+    world = AutomaticModelEvolution(size = 5, generations = 20, ancestor = False,
         target = 90, verbose=0)
     world.run()
     world.save()
