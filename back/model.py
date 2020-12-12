@@ -34,7 +34,7 @@ class Model():
         self.X_train, self.Y_train = self.g.split(train, self.n_steps)
         self.X_test, self.Y_test = self.g.split(test, self.n_steps)
         # Define input layer shape
-        self.input_shape = (self.X_train.shape[1], self.X_train.shape[2], self.X_train.shape[3])
+        self.input_shape = (self.X_train.shape[1], self.X_train.shape[2], self.X_train.shape[3],)
         print(self.input_shape)
         # Just output arrests
         self.output_shape = self.Y_train.shape[1]
@@ -46,7 +46,7 @@ class Model():
         # Define the model
         model = Sequential()
         # Dense layer
-        model.add(Dense(1000, activation = 'relu', input_shape = self.input_shape))
+        model.add(Dense(1000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
         # Add the first LSTM layer with an input shape of n_steps for each county
         model.add(LSTM(2000, activation = 'relu', return_sequences = True))
         # Dropout layer
