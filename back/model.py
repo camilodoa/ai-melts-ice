@@ -48,7 +48,7 @@ class Model():
         # Dense layer
         model.add(Dense(1000, activation = 'relu', input_shape = self.input_shape))
         # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(2000, activation = 'relu', return_sequences = True, input_shape = input_shape))
+        model.add(LSTM(2000, activation = 'relu', return_sequences = True))
         # Dropout layer
         model.add(Dropout(0.2))
         # Dense layer
