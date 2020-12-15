@@ -296,17 +296,12 @@ class Generator():
         '''
 
         n = len(df.values)
-        # Arrange our input into groups of 4 datapoints per county
-        sequences_x = []
-        for i in range(n):
-            j = 0
-            m = len(df.columns)
-            curr = []
-            while j < m:
-                curr.append(df.iloc[i, j : j + 4].values)
-                j += 4
-            sequences_x.append(curr)
-        sequences_x = np.array(sequences_x)
+        # sequences_x = df.values
+        # sequences_x = df.values.reshape(n, 1960, 4)
+
+        x_columns = [col for col in df.columns if 'arrests' in col or 'population' in col]
+        sequences_x = df[x_columns].values
+        print(sequences_x)
 
         # Arrange our output to only contain arrests per county
         y_columns = [col for col in df.columns if 'arrests' in col]

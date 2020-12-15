@@ -6,6 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
+import random
 
 class Model():
     '''
@@ -34,10 +35,16 @@ class Model():
         self.X_train, self.Y_train = self.g.split(train, self.n_steps)
         self.X_test, self.Y_test = self.g.split(test, self.n_steps)
         # Define input layer shape
-        self.input_shape = (self.X_train.shape[1], self.X_train.shape[2], self.X_train.shape[3],)
+        self.input_shape = (self.X_train.shape[1], self.X_train.shape[2])
         print(self.input_shape)
         # Just output arrests
         self.output_shape = self.Y_train.shape[1]
+        # Name array
+        self.names = []
+        with open('names.txt', 'r') as f:
+            for line in f:
+                for name in line.split():
+                    self.names.append(name)
 
     def build(self):
         '''
@@ -45,15 +52,23 @@ class Model():
         '''
         # Define the model
         model = Sequential()
-        # Dense layer
-        model.add(Dense(1000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
         # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(2000, activation = 'relu', return_sequences = True))
+        model.add(LSTM(2000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
         # Dropout layer
         model.add(Dropout(0.2))
         # Dense layer
         model.add(Dense(1000, activation = 'relu'))
+        # Dropout layer
+        model.add(Dropout(0.2))
         # Add the second LSTM layer
+        model.add(LSTM(1000, return_sequences = True, activation = 'relu'))
+        # Dropout layer
+        model.add(Dropout(0.2))
+        # Dense layer
+        model.add(Dense(2000, activation = 'relu'))
+        # Dropout layer
+        model.add(Dropout(0.2))
+        # Add the third LSTM layer
         model.add(LSTM(1000, activation = 'relu'))
         # Dropout layer
         model.add(Dropout(0.2))
@@ -64,7 +79,7 @@ class Model():
         # Add the final Dense layer
         model.add(Dense(self.output_shape))
         # Compile the model
-        model.compile(optimizer = 'adam', loss = 'mse')
+        model.compile(optimizer = 'adamax', loss = 'mse')
         # Print summary
         model.summary()
         return model
@@ -77,12 +92,18 @@ class Model():
         self.model = self.build()
         # Fit model
         self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000)
-        self.error = self.model.evaluate(self.X_test, self.Y_test,
-                verbose=1)
+
+        # self.error = self.model.evaluate(self.X_test, self.Y_test,
+        #         verbose = 1)
+        self.error = self.history.history['loss'][-1]
         print(self.error)
-        # Save model
-        self.model.save('models/model.h5')
+        self.save()
         return self.error
+
+    def save(self):
+        name = random.choice(self.names) + str(int(self.error))
+        self.model.save('models/{0}.h5'.format(name))
+        return name
 
 
     def predict_forward(self, month, year):
