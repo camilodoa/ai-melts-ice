@@ -299,7 +299,7 @@ class Generator():
         # sequences_x = df.values
         # sequences_x = df.values.reshape(n, 1960, 4)
 
-        x_columns = [col for col in df.columns if 'arrests' in col or 'population' in col]
+        x_columns = [col for col in df.columns]
         sequences_x = df[x_columns].values
         print(sequences_x)
 

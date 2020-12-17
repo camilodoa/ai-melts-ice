@@ -28,8 +28,8 @@ class Model():
         # Each prediction will be based on n_steps data points before it
         self.n_steps = 12
         # Division between train and test
-        self.split = 0.8
-        train, test = df.loc[0:int(len(df) * self.split)], df.loc[int(len(df) * self.split):len(df)]
+        self.split = 0.9
+        train, test = df.iloc[0:int(len(df) * self.split)], df.iloc[int(len(df) * self.split):len(df)]
         # Split dataset into X Y pairs
         print('Splitting dataset into train and test (X, Y) pairs')
         self.X_train, self.Y_train = self.g.split(train, self.n_steps)
@@ -53,33 +53,29 @@ class Model():
         # Define the model
         model = Sequential()
         # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(2000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
+        model.add(LSTM(8000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
         # Dropout layer
         model.add(Dropout(0.2))
         # Dense layer
-        model.add(Dense(1000, activation = 'relu'))
+        model.add(Dense(4000, activation = 'relu'))
+        # Dropout layer
+        model.add(Dropout(0.2))
+        # Dense layer
+        model.add(Dense(4000, activation = 'relu'))
         # Dropout layer
         model.add(Dropout(0.2))
         # Add the second LSTM layer
-        model.add(LSTM(1000, return_sequences = True, activation = 'relu'))
+        model.add(LSTM(4000, activation = 'relu'))
         # Dropout layer
         model.add(Dropout(0.2))
         # Dense layer
-        model.add(Dense(2000, activation = 'relu'))
-        # Dropout layer
-        model.add(Dropout(0.2))
-        # Add the third LSTM layer
-        model.add(LSTM(1000, activation = 'relu'))
-        # Dropout layer
-        model.add(Dropout(0.2))
-        # Dense layer
-        model.add(Dense(2000, activation = 'relu'))
+        model.add(Dense(3000, activation = 'relu'))
         # Dropout layer
         model.add(Dropout(0.2))
         # Add the final Dense layer
         model.add(Dense(self.output_shape))
         # Compile the model
-        model.compile(optimizer = 'adamax', loss = 'mse')
+        model.compile(optimizer = 'adam', loss = 'mse')
         # Print summary
         model.summary()
         return model
