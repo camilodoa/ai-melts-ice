@@ -2,6 +2,7 @@
 ai-melts-ice/
 .DS_Store
 .idea/
+models/
 # Python
 
 # Byte-compiled / optimized / DLL files

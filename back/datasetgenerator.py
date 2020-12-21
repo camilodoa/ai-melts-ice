@@ -301,7 +301,6 @@ class Generator():
 
         x_columns = [col for col in df.columns]
         sequences_x = df[x_columns].values
-        print(sequences_x)
 
         # Arrange our output to only contain arrests per county
         y_columns = [col for col in df.columns if 'arrests' in col]

@@ -36,7 +36,6 @@ class Model():
         self.X_test, self.Y_test = self.g.split(test, self.n_steps)
         # Define input layer shape
         self.input_shape = (self.X_train.shape[1], self.X_train.shape[2])
-        print(self.input_shape)
         # Just output arrests
         self.output_shape = self.Y_train.shape[1]
         # Name array
@@ -54,28 +53,36 @@ class Model():
         model = Sequential()
         # Add the first LSTM layer with an input shape of n_steps for each county
         model.add(LSTM(8000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
-        # Dropout layer
         model.add(Dropout(0.2))
-        # Dense layer
+
+        model.add(Dense(7000, activation = 'relu'))
+        model.add(Dropout(0.2))
+
+        model.add(Dense(6000, activation = 'relu'))
+        model.add(Dropout(0.2))
+
+        model.add(Dense(5000, activation = 'relu'))
+        model.add(Dropout(0.2))
+
         model.add(Dense(4000, activation = 'relu'))
-        # Dropout layer
         model.add(Dropout(0.2))
-        # Dense layer
-        model.add(Dense(4000, activation = 'relu'))
-        # Dropout layer
-        model.add(Dropout(0.2))
-        # Add the second LSTM layer
-        model.add(LSTM(4000, activation = 'relu'))
-        # Dropout layer
-        model.add(Dropout(0.2))
-        # Dense layer
+
         model.add(Dense(3000, activation = 'relu'))
-        # Dropout layer
         model.add(Dropout(0.2))
-        # Add the final Dense layer
+
+        model.add(Dense(2000, activation = 'relu'))
+        model.add(Dropout(0.2))
+
+        model.add(Dense(2000, activation = 'relu'))
+        model.add(Dropout(0.2))
+
+        model.add(LSTM(2000, activation = 'relu'))
+        model.add(Dropout(0.2))
+
+        # Output lauer
         model.add(Dense(self.output_shape))
         # Compile the model
-        model.compile(optimizer = 'adam', loss = 'mse')
+        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'])
         # Print summary
         model.summary()
         return model
@@ -86,8 +93,11 @@ class Model():
         '''
         # Build model
         self.model = self.build()
+        # Early Stopping
+        # callback = EarlyStopping(monitor='loss', patience=10, mode='min')
         # Fit model
-        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000)
+        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000,
+            batch_size = 32, verbose = 1)
 
         # self.error = self.model.evaluate(self.X_test, self.Y_test,
         #         verbose = 1)
