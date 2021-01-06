@@ -30,7 +30,7 @@ function Header({minDate, maxDate, fetchDateData, today, setToday, location}) {
                             placeholderText='Select a month'
                             showMonthYearPicker/>
 
-                        <FaSistrix className={'mx-2'} size={'1em'}/>
+                        <FaSistrix className={'mx-2 searchglass'} size={'1em'}/>
                     </div>
                     :
                     null}

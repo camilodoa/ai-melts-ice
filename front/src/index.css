@@ -136,3 +136,7 @@ code {
   color: #c3c4c5;
   text-decoration: none;
 }
+.searchglass {
+  left: -40px;
+  position: relative;
+}
