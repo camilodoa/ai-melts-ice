@@ -4,7 +4,7 @@ import Popup from './components/popup';
 import ReactDOM from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
-import api from '../rest';
+import api from '../config';
 import useWindowSize from '../window';
 import logo from '../logo512.png';
 
