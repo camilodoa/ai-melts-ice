@@ -99,7 +99,7 @@ class Model():
         # Early Stopping
         # callback = EarlyStopping(monitor='loss', patience=10, mode='min')
         # Fit model
-        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000,
+        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 500,
             batch_size = 32, verbose = 1)
 
         print(history.history['loss'])
