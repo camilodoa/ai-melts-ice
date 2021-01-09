@@ -54,7 +54,7 @@ class Model():
         # Define the model
         model = Sequential()
         # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(8000, activation = 'tanh', recurrent_activation="sigmoid",return_sequences = True, input_shape = self.input_shape))
+        model.add(LSTM(8000, activation = 'tanh', recurrent_activation='sigmoid',return_sequences = True, input_shape = self.input_shape))
         model.add(Dropout(0.2))
 
         model.add(Dense(7000, activation = 'relu'))
@@ -78,13 +78,13 @@ class Model():
         model.add(Dense(2000, activation = 'relu'))
         model.add(Dropout(0.2))
 
-        model.add(LSTM(2000, activation = 'tanh', recurrent_activation="sigmoid"))
+        model.add(LSTM(2000, activation = 'tanh', recurrent_activation='sigmoid'))
         model.add(Dropout(0.2))
 
         # Output lauer
         model.add(Dense(self.output_shape))
         # Compile the model
-        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'],
+        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy', 'val_loss', 'val_accuracy'],
             validation_split=0.33, epochs=800)
         # Print summary
         model.summary()
@@ -111,7 +111,7 @@ class Model():
             self.error = self.model.evaluate(self.X_test, self.Y_test)
         except:
             e = sys.exc_info()[0]
-            write_to_page( "<p>Error: %s</p>" % e )
+            print(e)
 
         self.error = self.history.history['loss'][-1]
         print(self.error)
