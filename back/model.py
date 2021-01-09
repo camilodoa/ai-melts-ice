@@ -1,12 +1,14 @@
 from datasetgenerator import Generator
 from dateutil import relativedelta
 import os.path
+import sys
 import pandas as pd
+import random
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
-import random
 
 class Model():
     '''
@@ -82,7 +84,8 @@ class Model():
         # Output lauer
         model.add(Dense(self.output_shape))
         # Compile the model
-        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'])
+        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'],
+            validation_split=0.33, epochs=800)
         # Print summary
         model.summary()
         return model
@@ -99,8 +102,17 @@ class Model():
         self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000,
             batch_size = 32, verbose = 1)
 
-        # self.error = self.model.evaluate(self.X_test, self.Y_test,
-        #         verbose = 1)
+        print(history.history['loss'])
+        print(history.history['accuracy'])
+        print(history.history['val_loss'])
+        print(history.history['val_accuracy'])
+
+        try:
+            self.error = self.model.evaluate(self.X_test, self.Y_test)
+        except:
+            e = sys.exc_info()[0]
+            write_to_page( "<p>Error: %s</p>" % e )
+
         self.error = self.history.history['loss'][-1]
         print(self.error)
         self.save()
