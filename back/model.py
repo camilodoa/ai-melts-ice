@@ -26,9 +26,9 @@ class Model():
         # Sort values by date (earliest dates first)
         df = df.sort_values('Date').drop(['Date'], axis = 1)
         # Each prediction will be based on n_steps data points before it
-        self.n_steps = 12
+        self.n_steps = 2
         # Division between train and test
-        self.split = 0.9
+        self.split = 0.8
         train, test = df.iloc[0:int(len(df) * self.split)], df.iloc[int(len(df) * self.split):len(df)]
         # Split dataset into X Y pairs
         print('Splitting dataset into train and test (X, Y) pairs')
@@ -52,7 +52,7 @@ class Model():
         # Define the model
         model = Sequential()
         # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(8000, activation = 'relu', return_sequences = True, input_shape = self.input_shape))
+        model.add(LSTM(8000, activation = 'tanh', recurrent_activation="sigmoid",return_sequences = True, input_shape = self.input_shape))
         model.add(Dropout(0.2))
 
         model.add(Dense(7000, activation = 'relu'))
@@ -76,7 +76,7 @@ class Model():
         model.add(Dense(2000, activation = 'relu'))
         model.add(Dropout(0.2))
 
-        model.add(LSTM(2000, activation = 'relu'))
+        model.add(LSTM(2000, activation = 'tanh', recurrent_activation="sigmoid"))
         model.add(Dropout(0.2))
 
         # Output lauer

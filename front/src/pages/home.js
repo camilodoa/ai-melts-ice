@@ -22,9 +22,10 @@ export default function Home() {
   const [lat] = useState(40);
   const [zoom] = useState(size.width < 550 ? 2 : 3.6);
   const[minDate, setMinDate] = useState(new Date(2015, 1));
-  const [maxDate, setMaxDate] = useState(new Date(2021, 12));
+  const [maxDate, setMaxDate] = useState(new Date(2020, 11));
   const [dateData, setDateData] = useState(null);
   const [today, setToday] = useState(new Date() <= maxDate ? new Date() : maxDate);
+  console.log(today)
   // Lifecycle
   useEffect(() => {
     // Component did load
@@ -53,7 +54,7 @@ export default function Home() {
       let minMonth = parseInt(minStr[1]);
       let maxStr = r[r.length - 1].split('-');
       let maxYear = parseInt(maxStr[0]);
-      let maxMonth = parseInt(maxStr[1]);
+      let maxMonth = parseInt(maxStr[1]) - 1;
       return [new Date(minYear, minMonth), new Date(maxYear, maxMonth)]
     }).then(date => {
       setMinDate(date[0]);
@@ -319,6 +320,7 @@ export default function Home() {
         minDate={minDate}
         maxDate={maxDate}
         fetchDateData={fetchDateData}
+        today={today}
         setToday={setToday}/>
         {dateData === null ?
           <h1 className='body header my-3 mt-5"'>
