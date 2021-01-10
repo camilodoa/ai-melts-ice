@@ -85,7 +85,7 @@ class Model():
         model.add(Dense(self.output_shape))
         # Compile the model
         model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'],
-            validation_split=0.33, epochs=800)
+            validation_split=0.33)
         # Print summary
         model.summary()
         return model
@@ -99,7 +99,7 @@ class Model():
         # Early Stopping
         # callback = EarlyStopping(monitor='loss', patience=10, mode='min')
         # Fit model
-        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 500,
+        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000,
             batch_size = 32, verbose = 1)
 
         try:
