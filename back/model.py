@@ -28,7 +28,7 @@ class Model():
         # Sort values by date (earliest dates first)
         df = df.sort_values('Date').drop(['Date'], axis = 1)
         # Each prediction will be based on n_steps data points before it
-        self.n_steps = 2
+        self.n_steps = 3
         # Division between train and test
         self.split = 0.8
         train, test = df.iloc[0:int(len(df) * self.split)], df.iloc[int(len(df) * self.split):len(df)]
@@ -54,7 +54,8 @@ class Model():
         # Define the model
         model = Sequential()
         # Add the first LSTM layer with an input shape of n_steps for each county
-        model.add(LSTM(8000, activation = 'tanh', recurrent_activation='sigmoid',return_sequences = True, input_shape = self.input_shape))
+        model.add(LSTM(8000, activation = 'tanh', recurrent_activation='sigmoid',
+            return_sequences = True, input_shape = self.input_shape))
         model.add(Dropout(0.2))
 
         model.add(Dense(7000, activation = 'relu'))
@@ -66,13 +67,15 @@ class Model():
         model.add(Dense(5000, activation = 'relu'))
         model.add(Dropout(0.2))
 
-        model.add(Dense(4000, activation = 'relu'))
+        model.add(LSTM(4000, activation = 'tanh', recurrent_activation='sigmoid',
+            return_sequences = True, input_shape = self.input_shape))
         model.add(Dropout(0.2))
 
         model.add(Dense(3000, activation = 'relu'))
         model.add(Dropout(0.2))
 
-        model.add(Dense(2000, activation = 'relu'))
+        model.add(LSTM(3000, activation = 'tanh', recurrent_activation='sigmoid',
+            return_sequences = True, input_shape = self.input_shape))
         model.add(Dropout(0.2))
 
         model.add(Dense(2000, activation = 'relu'))
@@ -96,25 +99,21 @@ class Model():
         '''
         # Build model
         self.model = self.build()
-        # Early Stopping
-        # callback = EarlyStopping(monitor='loss', patience=10, mode='min')
         # Fit model
-        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 1000,
-            batch_size = 32, verbose = 1)
+        self.history = self.model.fit(self.X_train, self.Y_train, epochs = 600,
+            batch_size = 32, verbose = 1, validation_split=0.2)
 
         try:
             self.error = self.model.evaluate(self.X_test, self.Y_test)
         except:
-            e = sys.exc_info()[0]
-            print(e)
+            self.error = self.history.history['loss'][-1]
 
-        self.error = self.history.history['loss'][-1]
-        print(self.error)
         self.save()
         return self.error
 
     def save(self):
         name = random.choice(self.names) + str(int(self.error))
+        print("saving as {0}".format(name))
         self.model.save('models/{0}.h5'.format(name))
         return name
 
