@@ -11,9 +11,9 @@ predictions = pd.read_csv('predictions.csv', infer_datetime_format = True,
 # Predictions dataset with dates that are not parsed
 predictions_unparsed = pd.read_csv('predictions.csv', encoding = 'utf8')
 # Original dataset
-data = pd.read_csv('data.csv', infer_datetime_format = True, parse_dates = ['Date'], encoding = 'utf8')
+data = pd.read_csv('arrests2014-2018.csv', infer_datetime_format = True, parse_dates = ['Date'], encoding = 'utf8')
 # {county : coordinate} dictionary
-mapping = pickle.load( open( 'coordinates.dict', 'rb' ) )
+mapping = pickle.load(open('coordinates.dict', 'rb'))
 
 class InvalidUsage(Exception):
     '''

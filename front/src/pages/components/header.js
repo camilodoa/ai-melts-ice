@@ -7,8 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 import {FaSistrix} from 'react-icons/fa';
 import logo from '../../logo512.png';
 
-function Header({minDate, maxDate, fetchDateData, setToday, location}) {
-    const [date, setDate] = useState(new Date());
+function Header({minDate, maxDate, fetchDateData, today, setToday, location}) {
     return (
         <Navbar bg='light' expand='lg' sticky='top'>
             <Navbar.Brand href='/'>
@@ -20,9 +19,8 @@ function Header({minDate, maxDate, fetchDateData, setToday, location}) {
                 {location.pathname === '/' ?
                     <div>
                         <DatePicker
-                            selected={date}
+                            selected={today}
                             onChange={date => {
-                                setDate(date);
                                 fetchDateData(date);
                                 setToday(date);
                             }}
@@ -32,7 +30,7 @@ function Header({minDate, maxDate, fetchDateData, setToday, location}) {
                             placeholderText='Select a month'
                             showMonthYearPicker/>
 
-                        <FaSistrix className={'mx-2'} size={'1em'}/>
+                        <FaSistrix className={'mx-2 searchglass'} size={'1em'}/>
                     </div>
                     :
                     null}

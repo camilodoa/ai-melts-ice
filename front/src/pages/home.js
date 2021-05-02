@@ -4,7 +4,7 @@ import Popup from './components/popup';
 import ReactDOM from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 import token from '../tokens.js';
-import api from '../rest';
+import api from '../config';
 import useWindowSize from '../window';
 import logo from '../logo512.png';
 
@@ -22,9 +22,10 @@ export default function Home() {
   const [lat] = useState(40);
   const [zoom] = useState(size.width < 550 ? 2 : 3.6);
   const[minDate, setMinDate] = useState(new Date(2015, 1));
-  const [maxDate, setMaxDate] = useState(new Date(2021, 12));
+  const [maxDate, setMaxDate] = useState(new Date(2020, 11));
   const [dateData, setDateData] = useState(null);
   const [today, setToday] = useState(new Date() <= maxDate ? new Date() : maxDate);
+  const [map, setMap] = useState(null);
   // Lifecycle
   useEffect(() => {
     // Component did load
@@ -33,8 +34,8 @@ export default function Home() {
   }, [today]);
   useEffect(() => {
     // Data loaded
-    if (dateData !== null) {
-      getMap();
+    if (dateData && !map) {
+      setMap(getMap());
     }
   }, [dateData]);
   // API calls
@@ -53,7 +54,7 @@ export default function Home() {
       let minMonth = parseInt(minStr[1]);
       let maxStr = r[r.length - 1].split('-');
       let maxYear = parseInt(maxStr[0]);
-      let maxMonth = parseInt(maxStr[1]);
+      let maxMonth = parseInt(maxStr[1]) - 1;
       return [new Date(minYear, minMonth), new Date(maxYear, maxMonth)]
     }).then(date => {
       setMinDate(date[0]);
@@ -95,6 +96,9 @@ export default function Home() {
         r => r = JSON.parse(r)
     ).then(r => {
           setDateData(r);
+          if (map) {
+            map.getSource('ai-melts-ice').setData(r.data);
+          }
         }
     ).catch(
         err => console.log(err)
@@ -312,6 +316,7 @@ export default function Home() {
         map.getCanvas().style.cursor = '';
       });
     });
+    return map;
   }
   return (
     <div>
@@ -319,6 +324,7 @@ export default function Home() {
         minDate={minDate}
         maxDate={maxDate}
         fetchDateData={fetchDateData}
+        today={today}
         setToday={setToday}/>
         {dateData === null ?
           <h1 className='body header my-3 mt-5"'>
