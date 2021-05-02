@@ -87,8 +87,7 @@ class Model():
         # Output lauer
         model.add(Dense(self.output_shape))
         # Compile the model
-        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'],
-            validation_split=0.33)
+        model.compile(optimizer = 'adam', loss = 'mse', metrics=['accuracy'])
         # Print summary
         model.summary()
         return model
@@ -101,7 +100,7 @@ class Model():
         self.model = self.build()
         # Fit model
         self.history = self.model.fit(self.X_train, self.Y_train, epochs = 600,
-            batch_size = 32, verbose = 1, validation_split=0.2)
+            batch_size = 32, verbose = 1, validation_data=[self.X_test, self.Y_test], validation_split=0.33)
 
         try:
             self.error = self.model.evaluate(self.X_test, self.Y_test)
