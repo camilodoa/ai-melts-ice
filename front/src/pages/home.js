@@ -25,6 +25,7 @@ export default function Home() {
   const [maxDate, setMaxDate] = useState(new Date(2020, 11));
   const [dateData, setDateData] = useState(null);
   const [today, setToday] = useState(new Date() <= maxDate ? new Date() : maxDate);
+  const [map, setMap] = useState(null);
   // Lifecycle
   useEffect(() => {
     // Component did load
@@ -33,8 +34,8 @@ export default function Home() {
   }, [today]);
   useEffect(() => {
     // Data loaded
-    if (dateData !== null) {
-      getMap();
+    if (dateData && !map) {
+      setMap(getMap());
     }
   }, [dateData]);
   // API calls
@@ -95,6 +96,9 @@ export default function Home() {
         r => r = JSON.parse(r)
     ).then(r => {
           setDateData(r);
+          if (map) {
+            map.getSource('ai-melts-ice').setData(r.data);
+          }
         }
     ).catch(
         err => console.log(err)
@@ -312,6 +316,7 @@ export default function Home() {
         map.getCanvas().style.cursor = '';
       });
     });
+    return map;
   }
   return (
     <div>
