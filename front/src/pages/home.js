@@ -25,7 +25,6 @@ export default function Home() {
   const [maxDate, setMaxDate] = useState(new Date(2020, 11));
   const [dateData, setDateData] = useState(null);
   const [today, setToday] = useState(new Date() <= maxDate ? new Date() : maxDate);
-  console.log(today)
   // Lifecycle
   useEffect(() => {
     // Component did load
