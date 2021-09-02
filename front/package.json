@@ -14,7 +14,7 @@
     "d3-time-format": "^2.2.3",
     "elliptic": "^6.5.4",
     "http-proxy": "^1.18.1",
-    "immer": "~8.0.1",
+    "immer": "~9.0.6",
     "ini": "~2.0.0",
     "kind-of": "^6.0.3",
     "lodash": "^4.17.19",
