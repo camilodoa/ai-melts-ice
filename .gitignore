@@ -4,6 +4,7 @@ ai-melts-ice/
 .idea/
 models/
 # Python
+front/src/tokens.js
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

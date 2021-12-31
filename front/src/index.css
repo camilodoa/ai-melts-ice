@@ -15,7 +15,6 @@ code {
 }
 /*  App.js  */
 .App {
-  min-height: 100vh;
 }
 .App a:link{
   text-decoration: none;
