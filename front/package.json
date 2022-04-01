@@ -19,7 +19,7 @@
     "kind-of": "^6.0.3",
     "lodash": "^4.17.19",
     "mapbox-gl": "^1.6.1",
-    "minimist": "0.2.1",
+    "minimist": "1.2.6",
     "node-forge": "^1.2.1",
     "node-notifier": "~9.0.0",
     "object-path": "^0.11.6",
