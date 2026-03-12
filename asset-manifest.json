@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.53a01a5d.css",
-    "main.js": "/static/js/main.75fe8758.js",
-    "static/media/logo512.png": "/static/media/logo512.32d0142b74a0fd5ffbe4.png",
-    "index.html": "/index.html",
-    "main.53a01a5d.css.map": "/static/css/main.53a01a5d.css.map",
-    "main.75fe8758.js.map": "/static/js/main.75fe8758.js.map"
+    "main.css": "/ai-melts-ice/static/css/main.53a01a5d.css",
+    "main.js": "/ai-melts-ice/static/js/main.538ce82c.js",
+    "static/media/logo512.png": "/ai-melts-ice/static/media/logo512.32d0142b74a0fd5ffbe4.png",
+    "index.html": "/ai-melts-ice/index.html",
+    "main.53a01a5d.css.map": "/ai-melts-ice/static/css/main.53a01a5d.css.map",
+    "main.538ce82c.js.map": "/ai-melts-ice/static/js/main.538ce82c.js.map"
   },
   "entrypoints": [
     "static/css/main.53a01a5d.css",
-    "static/js/main.75fe8758.js"
+    "static/js/main.538ce82c.js"
   ]
 }
