@@ -13,7 +13,8 @@ function Header({minDate, maxDate, fetchDateData, today, setToday, location}) {
                 {' '}
                 AI Melts ICE
             </Navbar.Brand>
-            <Nav className='ml-sm-auto ml-xs-0 my-2' xs={{ order: 12 }}>
+            <Nav className='ml-auto' xs={{ order: 12 }}>
+
                 {location.pathname === '/' &&
                         <DatePicker
                             selected={today}
@@ -29,11 +30,16 @@ function Header({minDate, maxDate, fetchDateData, today, setToday, location}) {
 
                     }
             </Nav>
+            {/*
+                Temporarily remove the About link. For some reason, camilodoa.github.io/ai-melts-ice/about
+                isn't serving traffic. Something must be misconfigured or broken in the interaction between
+                react-router-dom and github pages.
             <Nav className='ml-sm-auto ml-xs-0' xs={{ order: 1 }}>
                 <Nav.Link href='/about'>
                     About
                 </Nav.Link>
             </Nav>
+            */}
         </Navbar>
     );
 }
